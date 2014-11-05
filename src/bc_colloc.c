@@ -577,7 +577,7 @@ apply_point_colloc_bc (
 	    if (eqn == R_MASS) {
 	      ieqn = MAX_PROB_EQN + BC_Types[bc_input_id].species_eq;
 	    } else {
-	      ieqn = upd->ep[eqn];
+	      ieqn = upd->ep[0][eqn];
 	    }
 
 	    if (ldof_eqn != -1)   {
@@ -596,7 +596,7 @@ apply_point_colloc_bc (
 	
 
 		for (var = 0; var < MAX_VARIABLE_TYPES; var++) {
-		  pvar = upd->vp[var];
+		  pvar = upd->vp[0][var];
 		  if (pvar != -1 && (BC_Types[bc_input_id].desc->sens[var] || 1)) {
 		    /*
 		     * Warning!!!!!!!!!!!!!!!!!!!!!!!
@@ -749,7 +749,7 @@ fvelocity_profile (int var_flag,
     d_func[var_flag] = 0.0;
   else
     d_func[var_flag] = -1.0;
-  if( pd->e[R_MESH1] )
+  if( pd->e[0][R_MESH1] )
   {
   d_func[MESH_DISPLACEMENT1] = 
     dvelo_vary_fnc_d1(velo_condition, fv->x[0], fv->x[1], fv->x[2], p, time);
@@ -2795,7 +2795,7 @@ apply_table_bc( double *func,
       }
   else
       {
-      if(  basis != -1 && pd->e[R_MESH1 + basis] )
+      if(  basis != -1 && pd->e[0][R_MESH1 + basis] )
          {
                       d_func[R_MESH1 + basis ] -= slope;
          }

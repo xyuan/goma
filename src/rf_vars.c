@@ -320,7 +320,7 @@ find_or_create_vd(const int var_type, const int ndof, const int mn,
   if (mn >= 0) {
     pd_ptr = pd_glob[mn];
     matID = -1;
-    if (pd_ptr->v[var_type] & V_MATSPECIFIC) {
+    if (pd_ptr->v[0][var_type] & V_MATSPECIFIC) {
       matID = mn;
     }
   } else {

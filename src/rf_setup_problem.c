@@ -322,8 +322,8 @@ check_discontinuous_interp_type(PROBLEM_DESCRIPTION_STRUCT *curr_pd,
      *    the interface
      ********************************************************************/
 {
-  int *v_ptr = curr_pd->v;
-  int interp_type = curr_pd->i[var_type];
+  int *v_ptr = curr_pd->v[0];
+  int interp_type = curr_pd->i[0][var_type];
   if (v_ptr[var_type] & V_MATSPECIFIC) {
     switch (interp_type) {
     case I_NOTHING:
@@ -377,7 +377,7 @@ turn_on_discontinuous(PROBLEM_DESCRIPTION_STRUCT *curr_pd,
      *    material boundaries.
      ********************************************************************/
 {
-  int *v_ptr = &(curr_pd->v[var_type]); 
+  int *v_ptr = &(curr_pd->v[0][var_type]); 
   if ((*v_ptr) & (V_SOLNVECTOR)) {
     *v_ptr |= V_MATSPECIFIC;
     check_discontinuous_interp_type(curr_pd, var_type);
@@ -490,21 +490,21 @@ coordinate_discontinuous_variables(Exo_DB *exo,	Dpi *dpi)
   for (imat = 0; imat < upd->Num_Mat; imat++) {
     curr_pd = pd_glob[imat];
     for (k = 0; k <  V_LAST; k++) {
-      ivec[k] = curr_pd->v[k];
+      ivec[k] = curr_pd->v[0][k];
     }
     ReduceBcast_BOR(ivec, V_LAST);
 #ifdef DEBUG_HKM
     print_sync_start(TRUE);
     for (k = 0; k < V_LAST; k++) {
-      if (curr_pd->v[k] != ivec[k]) {
+      if (curr_pd->v[0][k] != ivec[k]) {
         printf("P_%d: v field for var_type %d changed from %d to %d\n",
-	       ProcID, k, curr_pd->v[k], ivec[k]);
+	       ProcID, k, curr_pd->v[0][k], ivec[k]);
       }
     }
     print_sync_end(TRUE);
 #endif
     for (k = 0; k < V_LAST; k++) {
-      curr_pd->v[k] = ivec[k];
+      curr_pd->v[0][k] = ivec[k];
     }    
   }
   safer_free((void **) &ivec);

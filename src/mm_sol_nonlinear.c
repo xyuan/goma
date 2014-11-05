@@ -2071,11 +2071,11 @@ EH(-1,"version not compiled with frontal solver");
 
 
 
-      if (pd->v[SHELL_FILMP] || pd->v[SHELL_PARTC])
+      if (pd->v[0][SHELL_FILMP] || pd->v[0][SHELL_PARTC])
         {
 	    for (i = 0; i < num_total_nodes; i++) 
 	      {
-                if (pd->v[SHELL_FILMH])
+                if (pd->v[0][SHELL_FILMH])
                   {
                    j = Index_Solution(i, R_SHELL_FILMH, 0, 0 , -1);
  
@@ -2084,7 +2084,7 @@ EH(-1,"version not compiled with frontal solver");
                        x[j] = 1.0e-6;
                      } 
                   }
-                if (pd->v[SHELL_PARTC])
+                if (pd->v[0][SHELL_PARTC])
                   {
                    j = Index_Solution(i, R_SHELL_PARTC, 0, 0 , -1);
                    if (x[j] < 1.0e-6 ) 

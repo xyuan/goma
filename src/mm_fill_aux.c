@@ -512,7 +512,7 @@ int load_coordinate_scales(const int c, struct Field_Variables *f)
    */
 
 	
-  if( pd->v[POLYMER_STRESS11] || ei->deforming_mesh )   /* these are the only two cases where d_grad_e_dq is used */
+  if( pd->v[0][POLYMER_STRESS11] || ei->deforming_mesh )   /* these are the only two cases where d_grad_e_dq is used */
     {
       siz = sizeof(double) * DIM * DIM * DIM * DIM;
       memset(f->d_grad_e_dq, 0, siz);
@@ -798,7 +798,7 @@ dbl element_viscosity(void)
   mu_avg = viscosity(gn, gamma, d_mu);
 
   /* get polymer viscosity */
-  if ( pd->v[POLYMER_STRESS11] )
+  if ( pd->v[0][POLYMER_STRESS11] )
     {
       for ( mode=0; mode<vn->modes; mode++)
 	{
@@ -828,7 +828,7 @@ element_velocity(dbl v_avg[DIM], dbl dv_dnode[DIM][MDE],
   
   /* parameter variables are initialized in matrix_fill */
   
-  if (pd->i[VELOCITY1]==I_Q1)
+  if (pd->i[0][VELOCITY1]==I_Q1)
     {
       if (cr->MeshMotion == ARBITRARY) {
 	  for (p = 0; p < dim; p++)
@@ -884,7 +884,7 @@ element_velocity(dbl v_avg[DIM], dbl dv_dnode[DIM][MDE],
 	}
 	  
     }
-  else if (pd->i[VELOCITY1]==I_Q2)
+  else if (pd->i[0][VELOCITY1]==I_Q2)
     {    
       if ( cr->MeshMotion == ARBITRARY)
 	{
@@ -1341,7 +1341,7 @@ surface_determinant_and_normal(
   double tmp;
   int dim =  pd->Num_Dim;
 
-  DeformingMesh = pd->e[R_MESH1];
+  DeformingMesh = pd->e[0][R_MESH1];
   ShapeVar = pd->ShapeVar;
 
   siz = MAX_PDIM*MDE*sizeof(double);
@@ -1751,7 +1751,7 @@ edge_determinant_and_vectors(
 	       id_side, num_nodes_on_side, local_elem_node_id);
 
  dim = ielem_surf_dim + 1;
-  DeformingMesh = pd->e[R_MESH1];
+  DeformingMesh = pd->e[0][R_MESH1];
   ShapeVar = pd->ShapeVar;
 
   /* initialize variables */
@@ -2329,7 +2329,7 @@ calc_CL_normal ( double snormal[DIM],
   
   
   /* calculate sensitivities */
-  if (af->Assemble_Jacobian && pd->e[R_MESH1] ) 
+  if (af->Assemble_Jacobian && pd->e[0][R_MESH1] ) 
     {
       int i, id, Inode,ldof,p;
       int iconnect_ptr = exo->elem_ptr[elem];
@@ -2480,7 +2480,7 @@ get_supg_stuff(dbl *supg_term,
   for ( p=0; p<velodim; p++)
     {
       j = VELOCITY1 + p;
-      if ( pd->v[j] )
+      if ( pd->v[0][j] )
 	{
 	  dofs = ei->dof[j]; 
 	  for(i=0; i<dofs; i++) v[p][i] = *esp->v[p][i];
@@ -2507,7 +2507,7 @@ get_supg_stuff(dbl *supg_term,
    * For now, use the average velocity of all nodes.
    */
   memset(v_coeff, 0, sizeof(double)*MDE);
-  if ( pd->v[VELOCITY1] )
+  if ( pd->v[0][VELOCITY1] )
     {
       foo = 1.0 / ei->dof[VELOCITY1];
       for ( i=0; i < dofs; i++ )
@@ -2586,7 +2586,7 @@ get_supg_stuff(dbl *supg_term,
   for ( p=0; p < dim; p++ )
     {
       j = VELOCITY1 + p;
-      if ( pd->v[j] )
+      if ( pd->v[0][j] )
 	{
 	  for(i=0; i<ei->dof[j]; i++)
 	    {

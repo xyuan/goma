@@ -1287,7 +1287,7 @@ assemble_level_correct(double afill[],	/* Jacobian matrix for fill equation  */
    * Bail out fast if there's nothing to do...
    */
 
-  if ( ! pd->e[eqn] )
+  if ( ! pd->e[0][eqn] )
     {
       return(status);
     }
@@ -1562,7 +1562,7 @@ assemble_level_project(double afill[],	/* Jacobian matrix for fill equation  */
    * Bail out fast if there's nothing to do...
    */
 
-  if ( ! pd->e[eqn] )
+  if ( ! pd->e[0][eqn] )
     {
       return(status);
     }
@@ -1686,7 +1686,7 @@ gradient_norm_err( double *x,
        blk_id = dpi->eb_id_global[eb];
        mn = map_mat_index(blk_id);
 
-       if( pd_glob[mn]->e[ls->var] )
+       if( pd_glob[mn]->e[0][ls->var] )
          grad_err += evaluate_volume_integral ( exo,
 				      dpi,
 				      I_MAG_GRAD_FILL_ERROR,
@@ -1703,7 +1703,7 @@ gradient_norm_err( double *x,
 				      0.0,
 				      0 );
 
-       if( pd_glob[mn]->e[ls->var] )
+       if( pd_glob[mn]->e[0][ls->var] )
          area += evaluate_volume_integral ( exo,
 				      dpi,
 				      I_LS_ARC_LENGTH,
@@ -1791,7 +1791,7 @@ surf_based_initialization ( double *x,
                             double delta_t )
 {
   int a, I, ie;
-  int DeformingMesh = upd->ep[R_MESH1];
+  int DeformingMesh = upd->ep[0][R_MESH1];
   double r[DIM];
   double **Disp = NULL;
   
@@ -2567,7 +2567,7 @@ stash_node_displacements( double **d, int num_total_nodes, double *x, Exo_DB *ex
 					var = MESH_DISPLACEMENT1 + p;
 
 					
-					if( pd->v[var] )
+					if( pd->v[0][var] )
 					{
 						
 						for(i = 0; i < ei->dof[var]; i++)
@@ -2577,7 +2577,7 @@ stash_node_displacements( double **d, int num_total_nodes, double *x, Exo_DB *ex
 											  PSI, 
 											  ei->dof_list[var][i], 
 											  ei->ielem_shape,
-											  pd->i[var],
+											  pd->i[0][var],
 											  i);
 
 							d[p][gnn] += *esp->d[p][i] * phi[i];
@@ -2612,7 +2612,7 @@ retrieve_node_coordinates( int I,
 	{
 	  var = MESH_DISPLACEMENT1 + a;
 
-	if( pd->v[var] ) 
+	if( pd->v[0][var] ) 
 	{
 	  ie = Index_Solution( I, var, 0, 0, -1 );
 
@@ -2735,7 +2735,7 @@ create_surfs_from_iso (int isovar,
       e_start = exo->eb_ptr[ebi];
       e_end   = exo->eb_ptr[ebi+1];
 
-      if ( pd->e[isovar] )
+      if ( pd->e[0][isovar] )
 	{
 	  for( e = e_start ; e < e_end ; e++)
 	    {
@@ -3187,11 +3187,11 @@ elem_on_isosurface ( int elem,
   
   ebn = find_elemblock_index(elem, exo);
   mn = Matilda[ebn];
-  if (!(pd_glob[mn]->v[isovar])) return (FALSE);
+  if (!(pd_glob[mn]->v[0][isovar])) return (FALSE);
   
   ielem_type = Elem_Type(exo, elem);
   ielem_shape  = type2shape(ielem_type);
-  interpolation = pd_glob[mn]->i[isovar];
+  interpolation = pd_glob[mn]->i[0][isovar];
   dofs = getdofs(ielem_shape, interpolation);
   
   I = exo->node_list[ iconn_ptr + 0 ];
@@ -3268,11 +3268,11 @@ element_average ( int elem,
   
   ebn = find_elemblock_index(elem, exo);
   mn = Matilda[ebn];
-  if (!(pd_glob[mn]->v[var])) return (0.);
+  if (!(pd_glob[mn]->v[0][var])) return (0.);
   
   ielem_type = Elem_Type(exo, elem);
   ielem_shape  = type2shape(ielem_type);
-  dofs = getdofs(ielem_shape, pd_glob[mn]->i[var]);
+  dofs = getdofs(ielem_shape, pd_glob[mn]->i[0][var]);
   
   I = exo->node_list[ iconn_ptr + 0 ];
 
@@ -3299,7 +3299,7 @@ current_elem_on_isosurface ( int isovar,
   double f[MDE];
   int i;
 
-  if (!(pd->v[isovar])) return (FALSE);
+  if (!(pd->v[0][isovar])) return (FALSE);
 
   esp = x_static + ei->ieqn_ledof[ei->lvdof_to_ledof[isovar][0]];
   f[0] = *esp - isoval;
@@ -3323,7 +3323,7 @@ current_elem_on_isosurface ( int isovar,
   /* look for crossings that intersect a side but don't change the sign
      of any nodes
    */
-  switch ( pd->i[isovar] ) {
+  switch ( pd->i[0][isovar] ) {
     case I_Q1:
       return FALSE;
     case I_Q2:
@@ -3369,11 +3369,11 @@ significant_element_crossing ( int elem,
 
   ebn = find_elemblock_index(elem, exo);
   mn = Matilda[ebn];
-  if (!(pd_glob[mn]->v[ls->var])) return (FALSE);
+  if (!(pd_glob[mn]->v[0][ls->var])) return (FALSE);
 
   ielem_type = Elem_Type(exo, elem);
   ielem_shape  = type2shape(ielem_type);
-  dofs = getdofs(ielem_shape, pd_glob[mn]->i[ls->var]);
+  dofs = getdofs(ielem_shape, pd_glob[mn]->i[0][ls->var]);
 
   for ( i=0 ; i< dofs; i++)
     {
@@ -3408,7 +3408,7 @@ significant_current_element_crossing ()
   double max_neg = 0.;
   double max_pos = 0.;
 
-  if (!(pd->v[ls->var])) return (FALSE);
+  if (!(pd->v[0][ls->var])) return (FALSE);
 
   for ( i=0 ; i< ei->dof[ls->var]; i++)
     {
@@ -3661,7 +3661,7 @@ find_LS_mass ( const Exo_DB *exo,
        blk_id = dpi->eb_id_global[eb];
        mn = map_mat_index(blk_id);
 
-       if( pd_glob[mn]->e[ls->var] ) 
+       if( pd_glob[mn]->e[0][ls->var] ) 
             M += evaluate_volume_integral ( exo,
 				      dpi,
 				      ls->Mass_Sign,
@@ -3705,7 +3705,7 @@ find_LS_global_flux ( const Exo_DB *exo,
       blk_id = dpi->eb_id_global[eb];
       mn = map_mat_index(blk_id);
 
-      if( pd_glob[mn]->e[ls->var] ) 
+      if( pd_glob[mn]->e[0][ls->var] ) 
 
 	M += evaluate_global_flux ( exo,
 				    dpi, 
@@ -3770,7 +3770,7 @@ find_LS_vel(const Exo_DB *exo,
       blk_id = dpi->eb_id_global[eb];
       mn     = map_mat_index(blk_id);
       
-      if( pd_glob[mn]->e[R_LEVEL_SET] )
+      if( pd_glob[mn]->e[0][R_LEVEL_SET] )
 	{
 	  Vel += evaluate_volume_integral(exo,
 					  dpi,
@@ -4143,7 +4143,7 @@ find_intersections( struct LS_Surf_List *list,
     case QUADRILATERAL:
     case SHELL:
     
-      switch( pd->i[isovar] ) {
+      switch( pd->i[0][isovar] ) {
 
         case I_Q1:                     /* bilinear quadrilateral */
           {
@@ -4239,7 +4239,7 @@ find_intersections( struct LS_Surf_List *list,
     
     case HEXAHEDRON:
 
-      switch( pd->i[isovar] ) {
+      switch( pd->i[0][isovar] ) {
       
         case I_Q1:                     /* trilinear hex */
           {
@@ -4359,7 +4359,7 @@ find_intersections( struct LS_Surf_List *list,
 
   case TRISHELL:
     
-    switch( pd->i[isovar] ) {
+    switch( pd->i[0][isovar] ) {
       
     case I_Q1:                     /* bilinear triangular shell */
       {
@@ -4423,7 +4423,7 @@ find_facets( struct LS_Surf_List *list,
     case QUADRILATERAL:
     case SHELL: 
     
-      switch( pd->i[isovar] ) {
+      switch( pd->i[0][isovar] ) {
         case I_Q1:                     /* bilinear quadrilateral */
           {
  
@@ -4450,7 +4450,7 @@ find_facets( struct LS_Surf_List *list,
           break;
 
         default:
-          printf("isovar=%d, pd->i[isovar]=%d\n",isovar,pd->i[isovar]);
+          printf("isovar=%d, pd->i[0][isovar]=%d\n",isovar,pd->i[0][isovar]);
           EH(-1, "Facet based contouring not implemented for quads with this interpolation type");
           break;
 
@@ -4458,7 +4458,7 @@ find_facets( struct LS_Surf_List *list,
       break;
 
     case HEXAHEDRON:
-      switch( pd->i[isovar] ) {
+      switch( pd->i[0][isovar] ) {
  
         default:
           EH(-1, "Facet based contouring not implemented for hexes with this interpolation type");
@@ -5204,7 +5204,7 @@ ls_var_initialization ( double *u, Exo_DB *exo, Dpi *dpi, Comm_Ex *cx )
       mp = mp_glob[mn];
 
       // PRS note: hardwired here to R_PHASE1  
-      if ( pd->e[R_LEVEL_SET])
+      if ( pd->e[0][R_LEVEL_SET])
 	{
 	  int ielem_type, num_nodes, index;
 	  int i,j, var, nunks, ie;
@@ -5235,7 +5235,7 @@ ls_var_initialization ( double *u, Exo_DB *exo, Dpi *dpi, Comm_Ex *cx )
 		      
 		      nunks = get_nv_ndofs_modMF(nv, var);
 
-		      if( nunks > 0 && pd->i[var] )
+		      if( nunks > 0 && pd->i[0][var] )
 			{
 			  if ( nunks == 1 )
 			    {
@@ -5305,13 +5305,13 @@ scalar_value_at_local_node ( int ielem,
   switch ( var ) 
     {
     case FILL:
-      if ( pd->v[var] )
+      if ( pd->v[0][var] )
 	scalar_fv_fill ( esp->F, esp_dot->F, esp_old->F, bf[var]->phi, ei->dof[var],
 			 &fv->F, &scr1, &scr2 );
       val = fv->F;
       break;
     case TEMPERATURE:
-      if ( pd->v[var] )
+      if ( pd->v[0][var] )
 	scalar_fv_fill ( esp->T, esp_dot->T, esp_old->T, bf[var]->phi, ei->dof[var],
 			 &fv->T, &scr1, &scr2 );
       val =fv->T;
@@ -5687,7 +5687,7 @@ level_set_property(const double p0,
    *     just in case....  Hence the 'if 0'
    */
 
-  if ( ! pd->v[MESH_DISPLACEMENT1] ) return(0);
+  if ( ! pd->v[0][MESH_DISPLACEMENT1] ) return(0);
 
   for ( b=0; b < VIM; b++ )
     {
@@ -5812,25 +5812,25 @@ load_xfem_for_elem( double x[],
       xfem->have_XG = FALSE;
       for (eqn = V_FIRST; eqn < V_LAST && !xfem->have_XG; eqn++)
         {
-          if ( pd->i[eqn] == I_P1_XG ||
-               pd->i[eqn] == I_Q1_XG ||
-               pd->i[eqn] == I_Q2_XG ||
-               pd->i[eqn] == I_Q1_HG ||
-               pd->i[eqn] == I_Q1_HVG ||
-               pd->i[eqn] == I_Q2_HG ||
-               pd->i[eqn] == I_Q2_HVG ) xfem->have_XG = TRUE;
+          if ( pd->i[0][eqn] == I_P1_XG ||
+               pd->i[0][eqn] == I_Q1_XG ||
+               pd->i[0][eqn] == I_Q2_XG ||
+               pd->i[0][eqn] == I_Q1_HG ||
+               pd->i[0][eqn] == I_Q1_HVG ||
+               pd->i[0][eqn] == I_Q2_HG ||
+               pd->i[0][eqn] == I_Q2_HVG ) xfem->have_XG = TRUE;
         }
 
       /* check if quantities will be needed for discontinuous-type interpolations */
       xfem->have_disc = FALSE;
       for (eqn = V_FIRST; eqn < V_LAST && !xfem->have_disc; eqn++)
         {
-          if ( pd->i[eqn] == I_Q1_HV ||
-               pd->i[eqn] == I_Q1_HG ||
-               pd->i[eqn] == I_Q1_HVG  ||
-               pd->i[eqn] == I_Q2_HV ||
-               pd->i[eqn] == I_Q2_HG ||
-               pd->i[eqn] == I_Q2_HVG ) xfem->have_disc = TRUE;
+          if ( pd->i[0][eqn] == I_Q1_HV ||
+               pd->i[0][eqn] == I_Q1_HG ||
+               pd->i[0][eqn] == I_Q1_HVG  ||
+               pd->i[0][eqn] == I_Q2_HV ||
+               pd->i[0][eqn] == I_Q2_HG ||
+               pd->i[0][eqn] == I_Q2_HVG ) xfem->have_disc = TRUE;
         }
 #if 0
       /* possibly dangerous, but try to speed things up by setting
@@ -5838,13 +5838,13 @@ load_xfem_for_elem( double x[],
        */
       for (eqn = V_FIRST; eqn < V_LAST; eqn++)
         {
-          if ( pd->e[eqn] )
+          if ( pd->e[0][eqn] )
 	    {
 	      for (i = 0; i < ei->dof[eqn]; i++) 
 	        {
 	          ledof = ei->lvdof_to_ledof[eqn][i];
 		  
-                  xfem_dof_state( i, pd->i[eqn], ei->ielem_shape,
+                  xfem_dof_state( i, pd->i[0][eqn], ei->ielem_shape,
                                   &xfem_active, &extended_dof, &base_interp, &base_dof );
 		  if ( extended_dof && !xfem_active ) ei->active_interp_ledof[ledof] = FALSE;
 		}
@@ -5881,15 +5881,15 @@ load_xfem_for_stu( const double xi[] )
 
           dof_ls = ei->dof[ls->var];
 
-          if ( pd->i[ls->var] == I_Q1 ) 
+          if ( pd->i[0][ls->var] == I_Q1 ) 
 	    {
 	      F_elem_type = pd->Num_Dim == 2 ? BILINEAR_QUAD : TRILINEAR_HEX;
 	    }
-          else if ( pd->i[FILL] == I_Q2 ) 
+          else if ( pd->i[0][FILL] == I_Q2 ) 
 	    {
 	      F_elem_type = pd->Num_Dim == 2 ? BIQUAD_QUAD : TRIQUAD_HEX;
 	    }
-          else if ( pd->i[FILL] == I_NOTHING )
+          else if ( pd->i[0][FILL] == I_NOTHING )
 	    {
               xfem->near = FALSE;
               xfem->F = 2. * ls->Length_Scale;
@@ -6033,7 +6033,7 @@ xfem_correct( int num_total_nodes,
           if ( MatID == -1 ) MatID = 0;
           var_type = vd->Variable_Type;
 
-          interp = pd_glob[MatID]->i[var_type];
+          interp = pd_glob[MatID]->i[0][var_type];
 
           if ( is_xfem_interp( interp ) )
             {
@@ -6253,7 +6253,7 @@ xfem_predict( int num_total_nodes,
           if ( MatID == -1 ) MatID = 0;
           var_type = vd->Variable_Type;
 
-          interp = pd_glob[MatID]->i[var_type];
+          interp = pd_glob[MatID]->i[0][var_type];
 
           if ( is_xfem_interp( interp ) )
             {
@@ -6424,7 +6424,7 @@ xfem_var_diff( int var,
                double phidiff[MDE],
                double gradvdiff[DIM] )
 {
-  int interp = pd->i[var];
+  int interp = pd->i[0][var];
   BASIS_FUNCTIONS_STRUCT *bfv = bf[var];
   int xfem_active, extended_dof, base_interp, base_dof;
   int a, i;
@@ -6600,8 +6600,8 @@ load_lsi(const double width)
 /**** Shield the operations below since they are very expensive relative to the previous
       operations in the load_lsi routine. Add your variables as needed  ********/
 
-  if (pd->v[LUBP]  || pd->v[LUBP_2] || pd->v[SHELL_SAT_CLOSED] || pd->v[SHELL_PRESS_OPEN ] ||
-      pd->v[SHELL_PRESS_OPEN_2] || pd->v[SHELL_SAT_GASN] )
+  if (pd->v[0][LUBP]  || pd->v[0][LUBP_2] || pd->v[0][SHELL_SAT_CLOSED] || pd->v[0][SHELL_PRESS_OPEN ] ||
+      pd->v[0][SHELL_PRESS_OPEN_2] || pd->v[0][SHELL_SAT_GASN] )
     {
 
       /* Evaluate heaviside using FEM basis functions */
@@ -6614,7 +6614,7 @@ load_lsi(const double width)
       memset(lsi->d_Hn_dmesh, 0.0, sizeof(double)*DIM*MDE);
       memset(lsi->d_gradHn_dmesh, 0.0, sizeof(double)*DIM*DIM*MDE);
       
-      if(pd->v[LUBP] || pd->v[SHELL_SAT_CLOSED] || pd->v[SHELL_PRESS_OPEN ] || pd->v[SHELL_SAT_GASN] ) 
+      if(pd->v[0][LUBP] || pd->v[0][SHELL_SAT_CLOSED] || pd->v[0][SHELL_PRESS_OPEN ] || pd->v[0][SHELL_SAT_GASN] ) 
 	{
 	  for ( i = 0; i < ei->dof[eqn]; i++ ) {
 	    Fi = *esp->F[i];
@@ -6627,7 +6627,7 @@ load_lsi(const double width)
 	    }
 	    lsi->Hn         += Hni      * bf[eqn]->phi[i];
 	    lsi->d_Hn_dF[i] += d_Hni_dF * bf[eqn]->phi[i];
-	    if (pd->v[MESH_DISPLACEMENT1]) {
+	    if (pd->v[0][MESH_DISPLACEMENT1]) {
 	      for ( b = 0; b < DIM; b++ ) {
 		for ( k = 0; k < ei->dof[MESH_DISPLACEMENT1]; k++ ) {
 		  lsi->d_Hn_dmesh[b][k] += Hni * bf[eqn]->phi[i] * bf[MESH_DISPLACEMENT1]->phi[k];
@@ -6637,7 +6637,7 @@ load_lsi(const double width)
 	    for ( j = 0; j < VIM; j++ ) {
 	      lsi->gradHn[j]         += Hni      * bf[eqn]->grad_phi[i][j];
 	      lsi->d_gradHn_dF[j][i] += d_Hni_dF * bf[eqn]->grad_phi[i][j];
-	      if (pd->v[MESH_DISPLACEMENT1]) {
+	      if (pd->v[0][MESH_DISPLACEMENT1]) {
 		for ( b = 0; b < DIM; b++ ) {
 		  for ( k = 0; k < ei->dof[MESH_DISPLACEMENT1]; k++ ) {
 		    lsi->d_gradHn_dmesh[j][b][k] += Hni * bf[eqn]->d_grad_phi_dmesh[i][j][b][k];
@@ -6647,7 +6647,7 @@ load_lsi(const double width)
 	    }
 	  }
 	}
-      else if (pd->v[LUBP_2] || pd->v[SHELL_PRESS_OPEN_2]) 
+      else if (pd->v[0][LUBP_2] || pd->v[0][SHELL_PRESS_OPEN_2]) 
 	{
 	  eqn = R_PHASE1;
 	  for ( i = 0; i < ei->dof[eqn]; i++ ) {
@@ -6661,7 +6661,7 @@ load_lsi(const double width)
 	    }
 	    lsi->Hn         += Hni      * bf[eqn]->phi[i];
 	    lsi->d_Hn_dF[i] += d_Hni_dF * bf[eqn]->phi[i];
-	    if (pd->v[MESH_DISPLACEMENT1]) {
+	    if (pd->v[0][MESH_DISPLACEMENT1]) {
 	      for ( b = 0; b < DIM; b++ ) {
 		for ( k = 0; k < ei->dof[MESH_DISPLACEMENT1]; k++ ) {
 		  lsi->d_Hn_dmesh[b][k] += Hni * bf[eqn]->phi[i] * bf[MESH_DISPLACEMENT1]->phi[k];
@@ -6671,7 +6671,7 @@ load_lsi(const double width)
 	    for ( j = 0; j < VIM; j++ ) {
 	      lsi->gradHn[j]         += Hni      * bf[eqn]->grad_phi[i][j];
 	      lsi->d_gradHn_dF[j][i] += d_Hni_dF * bf[eqn]->grad_phi[i][j];
-	      if (pd->v[MESH_DISPLACEMENT1]) {
+	      if (pd->v[0][MESH_DISPLACEMENT1]) {
 		for ( b = 0; b < DIM; b++ ) {
 		  for ( k = 0; k < ei->dof[MESH_DISPLACEMENT1]; k++ ) {
 		    lsi->d_gradHn_dmesh[j][b][k] += Hni * bf[eqn]->d_grad_phi_dmesh[i][j][b][k];
@@ -6682,7 +6682,7 @@ load_lsi(const double width)
 	  }
 	} 
  
-    } /* end of if pd->v[LUBP] || ... etc */
+    } /* end of if pd->v[0][LUBP] || ... etc */
 
 /************ End of shielding **************************/
 
@@ -6771,7 +6771,7 @@ load_lsi_shell_second(const double width)
   memset(lsi->d_gradHn_dF, 0.0, sizeof(double)*DIM*MDE);
   memset(lsi->d_Hn_dmesh, 0.0, sizeof(double)*DIM*MDE);
   memset(lsi->d_gradHn_dmesh, 0.0, sizeof(double)*DIM*DIM*MDE);
-  if (upd->vp[LUBP_2] >= 0 || upd->vp[SHELL_PRESS_OPEN_2] >= 0) 
+  if (upd->vp[0][LUBP_2] >= 0 || upd->vp[0][SHELL_PRESS_OPEN_2] >= 0) 
     {
       eqn = R_PHASE1;
       for ( i = 0; i < ei->dof[eqn]; i++ ) {
@@ -6785,7 +6785,7 @@ load_lsi_shell_second(const double width)
 	}
 	lsi->Hn         += Hni      * bf[eqn]->phi[i];
 	lsi->d_Hn_dF[i] += d_Hni_dF * bf[eqn]->phi[i];
-	if (pd->v[MESH_DISPLACEMENT1]) {
+	if (pd->v[0][MESH_DISPLACEMENT1]) {
 	  for ( b = 0; b < DIM; b++ ) {
 	    for ( k = 0; k < ei->dof[MESH_DISPLACEMENT1]; k++ ) {
 	      lsi->d_Hn_dmesh[b][k] += Hni * bf[eqn]->phi[i] * bf[MESH_DISPLACEMENT1]->phi[k];
@@ -6795,7 +6795,7 @@ load_lsi_shell_second(const double width)
 	for ( j = 0; j < VIM; j++ ) {
 	  lsi->gradHn[j]         += Hni      * bf[eqn]->grad_phi[i][j];
 	  lsi->d_gradHn_dF[j][i] += d_Hni_dF * bf[eqn]->grad_phi[i][j];
-	  if (pd->v[MESH_DISPLACEMENT1]) {
+	  if (pd->v[0][MESH_DISPLACEMENT1]) {
 	    for ( b = 0; b < DIM; b++ ) {
 	      for ( k = 0; k < ei->dof[MESH_DISPLACEMENT1]; k++ ) {
 		lsi->d_gradHn_dmesh[j][b][k] += Hni * bf[eqn]->d_grad_phi_dmesh[i][j][b][k];
@@ -6804,7 +6804,7 @@ load_lsi_shell_second(const double width)
 	  }
 	}
       }    
-    } /* end of if upd->vp[LUBP] || ... etc */
+    } /* end of if upd->vp[0][LUBP] || ... etc */
   else
     {
       EH(-1," you shouldn't be in this routine. Go check it out or contact PRS 8/21/2012");
@@ -6876,7 +6876,7 @@ load_lsi_derivs()
   }
 
   /*
-   * If we're here, the pd->var[ls->var] is true...
+   * If we're here, the pd->v[0]ar[ls->var] is true...
    *
    * Always compute the distance function variable derivs, even for uncoupled fill problems...
    * see Hrenorm_constrain
@@ -6916,7 +6916,7 @@ load_lsi_derivs()
   /*
    * Derivatives w.r.t. MESH_DISPLACEMENTs
    */
-  if ( pd->v[MESH_DISPLACEMENT1] )
+  if ( pd->v[0][MESH_DISPLACEMENT1] )
   {
 	  
       for ( b=0; b < VIM; b++)
@@ -6995,7 +6995,7 @@ load_lsi_derivs()
   /*
    * Derivatives w.r.t. MESH_DISPLACEMENTs for non-zero alpha
    */
-  if ( pd->v[MESH_DISPLACEMENT1] )
+  if ( pd->v[0][MESH_DISPLACEMENT1] )
     {
       for ( b=0; b < VIM; b++)
         {
@@ -7424,7 +7424,7 @@ is_extended_dof( const int I,
   int extended_dof = FALSE;
 
   if ( MatID == -1 ) MatID = 0;
-  interp = pd_glob[MatID]->i[var];
+  interp = pd_glob[MatID]->i[0][var];
 
   switch (interp)
     {
@@ -7721,7 +7721,7 @@ map_local_coordinates( double *xi, double *x )
   int a,j;
   int dim = ei->ielem_dim;
   int ShapeVar = pd->ShapeVar;
-  int DeformingMesh = pd->e[R_MESH1];
+  int DeformingMesh = pd->e[0][R_MESH1];
   int mdof = ei->dof[ShapeVar];
   int ln, I;
   int iconnect = Proc_Connect_Ptr[ ei->ielem ];
@@ -7746,7 +7746,7 @@ map_local_coordinates( double *xi, double *x )
 	      I = Proc_Elem_Connect[ iconnect + ln ];
 
 	      phi_j = newshape( xi, ei->ielem_type, PSI, ln,
-                                ei->ielem_shape, pd->i[ShapeVar], j );
+                                ei->ielem_shape, pd->i[0][ShapeVar], j );
 
 	      x[a] += Coor[a][I] * phi_j;
 
@@ -7761,7 +7761,7 @@ map_local_coordinates( double *xi, double *x )
 	      I = Proc_Elem_Connect[ iconnect + ln ];
 
 	      phi_j = newshape( xi, ei->ielem_type, PSI, ln,
-                                ei->ielem_shape, pd->i[ShapeVar], j );
+                                ei->ielem_shape, pd->i[0][ShapeVar], j );
 
 	      x[a] += ( Coor[a][I] + *esp->d[a][j] ) * phi_j;
 	    }
@@ -8063,7 +8063,7 @@ compute_shape_fcn_values ( NTREE *tree )
         if (ei->active_interp_ledof[ledof]) {
           tree->phi[i][j] = newshape(ri, ei->ielem_type, PSI,
                            ei->dof_list[ls->var][j], ei->ielem_shape,
-                           pd->i[ls->var], jdof);
+                           pd->i[0][ls->var], jdof);
           jdof++;
         } else {
           tree->phi[i][j] = 0.0;
@@ -8808,7 +8808,7 @@ current_elem_overlaps_interface( double width )
   double absolute_minimum = DBL_MAX;
   double absolute_maximum = 0.;
  
-  if (!(pd->v[ls->var])) return (FALSE);
+  if (!(pd->v[0][ls->var])) return (FALSE);
   
   if ( width == 0. )
     {
@@ -8928,7 +8928,7 @@ elem_overlaps_interface( int elem,
 
   ebn = find_elemblock_index(elem, exo);
   mn = Matilda[ebn];
-  if (!(pd_glob[mn]->v[ls->var])) return (FALSE);
+  if (!(pd_glob[mn]->v[0][ls->var])) return (FALSE);
   
   if ( width == 0. )
     {
@@ -8938,7 +8938,7 @@ elem_overlaps_interface( int elem,
 
   ielem_type = Elem_Type(exo, elem);
   ielem_shape  = type2shape(ielem_type);
-  dofs = getdofs(ielem_shape, pd_glob[mn]->i[ls->var]);
+  dofs = getdofs(ielem_shape, pd_glob[mn]->i[0][ls->var]);
 
   for( i=0 ; i < dofs ; i++ )
     {
@@ -9219,7 +9219,7 @@ assemble_boundary_extension_velocity ( double x[],
   dim   = pd->Num_Dim;
 
   eqn   = R_EXT_VELOCITY;
-  peqn  = upd->ep[eqn];
+  peqn  = upd->ep[0][eqn];
 
   /* this element needs to be set if it does not span the interface
      and there are nodes that lie on an exterior face that has
@@ -9321,7 +9321,7 @@ assemble_boundary_extension_velocity ( double x[],
                    * J_ext_v_ext_v
                    */
                   var = eqn;
-                  pvar = upd->vp[var];
+                  pvar = upd->vp[0][var];
 
                   lec->J[peqn][pvar][i][i] += BIG_PENALTY;
                   lec->J[peqn][pvar][i][closest_node] -= BIG_PENALTY;
@@ -9404,7 +9404,7 @@ assemble_extension_velocity (dbl hsquared[DIM],
    * Bail out fast if there's nothing to do...
    */
 
-  if ( ! pd->e[eqn] )
+  if ( ! pd->e[0][eqn] )
     {
       return(status);
     }
@@ -9511,7 +9511,7 @@ assemble_extension_velocity (dbl hsquared[DIM],
   S = 2. * lsi->H - 1.;
   if ( af->Assemble_Residual )
     {
-      peqn = upd->ep[eqn];
+      peqn = upd->ep[0][eqn];
       /*
        * In the element, there will be contributions to this many equations
        * based on the number of degrees of freedom...
@@ -9530,11 +9530,11 @@ assemble_extension_velocity (dbl hsquared[DIM],
           grad_phi_i = bf[eqn]->grad_phi[i];
 
 	  advection = 0.;
-	  if ( pd->e[eqn] & T_ADVECTION )
+	  if ( pd->e[0][eqn] & T_ADVECTION )
 	    {
 		  advection = resid * wt_func;
 		  advection *= det_J * wt * h3;
-		  advection *= pd->etm[eqn][(LOG2_ADVECTION)];
+		  advection *= pd->etm[0][eqn][(LOG2_ADVECTION)];
 	    }
 	
 	  lec->R[peqn][i] += advection;      
@@ -9548,7 +9548,7 @@ assemble_extension_velocity (dbl hsquared[DIM],
   
   if ( af->Assemble_Jacobian )
     {
-      peqn = upd->ep[eqn];
+      peqn = upd->ep[0][eqn];
       
       for ( i=0; i<ei->dof[eqn]; i++)
 	{
@@ -9564,16 +9564,16 @@ assemble_extension_velocity (dbl hsquared[DIM],
 	   * J_ext_v_ext_v
 	   */
 	  var = EXT_VELOCITY;
-	  if ( pd->v[var] )
+	  if ( pd->v[0][var] )
 	    {
-	      pvar = upd->vp[var];
+	      pvar = upd->vp[0][var];
 	      for ( j=0; j<ei->dof[var]; j++)
 		{
                   grad_phi_j = bf[var]->grad_phi[j];
 		  
 		  advection = 0.;
 		  
-		  if ( pd->e[eqn] & T_ADVECTION )
+		  if ( pd->e[0][eqn] & T_ADVECTION )
 		    {
 #if GRADF_GRADEXTV
 		       for ( a=0; a<dim; a++)
@@ -9588,7 +9588,7 @@ assemble_extension_velocity (dbl hsquared[DIM],
 			 }
 #endif
 		      advection *= det_J * wt * h3;
-		      advection *= pd->etm[eqn][(LOG2_ADVECTION)];
+		      advection *= pd->etm[0][eqn][(LOG2_ADVECTION)];
 		      
 		    }
 		  
@@ -9603,9 +9603,9 @@ assemble_extension_velocity (dbl hsquared[DIM],
 
 	  var =  ls->var;
 	  
-	  if ( pd->v[var] )
+	  if ( pd->v[0][var] )
 	    {
-	      pvar = upd->vp[var];
+	      pvar = upd->vp[0][var];
 	      for ( j=0; j<ei->dof[var]; j++)
 		{
                   grad_phi_j = bf[var]->grad_phi[j];
@@ -9626,7 +9626,7 @@ assemble_extension_velocity (dbl hsquared[DIM],
 		  
 		  advection = 0.;
 		  
-		  if ( pd->e[eqn] & T_ADVECTION )
+		  if ( pd->e[0][eqn] & T_ADVECTION )
 		    {
 #if GRADF_GRADEXTV
 		       for ( a=0; a<dim; a++)
@@ -9642,7 +9642,7 @@ assemble_extension_velocity (dbl hsquared[DIM],
 #endif
 		      advection += resid * d_wt_func;
 		      advection *= det_J * wt * h3;
-		      advection *= pd->etm[eqn][(LOG2_ADVECTION)];
+		      advection *= pd->etm[0][eqn][(LOG2_ADVECTION)];
 		      
 		    }
 		  
@@ -9657,9 +9657,9 @@ assemble_extension_velocity (dbl hsquared[DIM],
 	  for ( p=0; p<dim; p++)
 	    {
 	      var = MESH_DISPLACEMENT1+p;
-	      if ( pd->v[var] )
+	      if ( pd->v[0][var] )
 		{
-		  pvar = upd->vp[var];
+		  pvar = upd->vp[0][var];
 		  for ( j=0; j<ei->dof[var]; j++)
 		    {
 		      d_det_J_dmesh_pj = bf[eqn]->d_det_J_dm[p][j];
@@ -9668,7 +9668,7 @@ assemble_extension_velocity (dbl hsquared[DIM],
 		      
 		      advection   = 0.;
 		      
-		      if ( pd->e[eqn] & T_ADVECTION )
+		      if ( pd->e[0][eqn] & T_ADVECTION )
 			{
 			  /*
 			   * three parts: 
@@ -9699,7 +9699,7 @@ assemble_extension_velocity (dbl hsquared[DIM],
 			  
 			  advection = advection_a + advection_b;
 			  
-			  advection *= wt_func * wt * pd->etm[eqn][(LOG2_ADVECTION)];
+			  advection *= wt_func * wt * pd->etm[0][eqn][(LOG2_ADVECTION)];
 			  
 			}
 		      
@@ -9736,7 +9736,7 @@ void get_subelement_descriptions(double x[],
       e_start = exo->eb_ptr[ebi];
       e_end   = exo->eb_ptr[ebi+1];
 
-      if ( pd->v[ls->var] )
+      if ( pd->v[0][ls->var] )
 	{
 	  for( ielem = e_start ; ielem < e_end ; ielem++)
 	    {
@@ -10182,7 +10182,7 @@ Courant_Time_Step( double x[], double x_old[], double x_older[],
 
       if (ls->var != NULL)
 	{
-	  if ( pd->v[ls->var] )
+	  if ( pd->v[0][ls->var] )
 	    {
 	      for( ielem = e_start ; ielem < e_end ; ielem++)
 		{
@@ -10191,14 +10191,14 @@ Courant_Time_Step( double x[], double x_old[], double x_older[],
 				   xdot, xdot_old,
 				   resid_vector, 0);
                                
-		  h_elem_siz(hsquared, hhv, dhv_dxnode, pd->e[R_MESH1]);
+		  h_elem_siz(hsquared, hhv, dhv_dxnode, pd->e[0][R_MESH1]);
               
 		  h_elem = 0.;
 		  for ( a=0; a<dim; a++) h_elem += hsquared[a];
 		  /* This is the size of the element */
 		  h_elem = sqrt(h_elem/ ((double )dim));
               
-		  if ( pd->v[EXT_VELOCITY] )
+		  if ( pd->v[0][EXT_VELOCITY] )
 		    {
 		      for ( i=0; i< ei->dof[EXT_VELOCITY]; i++ )
 			{
@@ -10209,14 +10209,14 @@ Courant_Time_Step( double x[], double x_old[], double x_older[],
 			    }
 			}
 		    }
-		  if ( pd->v[VELOCITY1] && tran->Fill_Equation != FILL_EQN_EXT_V )
+		  if ( pd->v[0][VELOCITY1] && tran->Fill_Equation != FILL_EQN_EXT_V )
 		    {
 		      for ( i=0; i< ei->dof[VELOCITY1]; i++ )
 			{
-			  if ( is_xfem_interp( pd->i[VELOCITY1] ) )
+			  if ( is_xfem_interp( pd->i[0][VELOCITY1] ) )
 			    {
 			      int xfem_active, extended_dof, base_interp, base_dof;
-			      xfem_dof_state( i, pd->i[VELOCITY1], ei->ielem_shape,
+			      xfem_dof_state( i, pd->i[0][VELOCITY1], ei->ielem_shape,
 					      &xfem_active, &extended_dof, &base_interp, &base_dof );
 			      if ( extended_dof ) continue;
 			    }
@@ -10279,7 +10279,7 @@ Courant_Time_Step( double x[], double x_old[], double x_older[],
           pd->CoordinateSystem == PROJECTED_CARTESIAN)
         wim = wim+1;
 
-      if ( pd->v[ls->var] )
+      if ( pd->v[0][ls->var] )
 	{
 	  for( ielem = e_start ; ielem < e_end ; ielem++)
 	    {
@@ -10301,7 +10301,7 @@ Courant_Time_Step( double x[], double x_old[], double x_older[],
                                xdot, xdot_old,
 		   	       resid_vector, 0);
 	      
-	      h_elem_siz(hsquared, hhv, dhv_dxnode, pd->e[R_MESH1]);
+	      h_elem_siz(hsquared, hhv, dhv_dxnode, pd->e[0][R_MESH1]);
               
               h_elem = 0.;
               for ( a=0; a<ei->ielem_dim; a++) h_elem += hsquared[a];
@@ -10322,7 +10322,7 @@ Courant_Time_Step( double x[], double x_old[], double x_older[],
 		  ip_total = elem_info(NQUAD, ei->ielem_type);
 		}
 		    
-              if ( is_xfem_interp( pd->i[VELOCITY1] ) )
+              if ( is_xfem_interp( pd->i[0][VELOCITY1] ) )
 	         num_passes = 2;
 	      else
 	        num_passes = 1;
@@ -10364,11 +10364,11 @@ Courant_Time_Step( double x[], double x_old[], double x_older[],
 		  
 		      /* prediction of normal velocity */
 		      vnorm = 0.;
-		      if ( pd->v[EXT_VELOCITY] )
+		      if ( pd->v[0][EXT_VELOCITY] )
 		        {
 		          vnorm += ( 2.5 * fv->ext_v - 1.5 * fv_old->ext_v );
 		        }
-		      if ( pd->v[VELOCITY1] && tran->Fill_Equation != FILL_EQN_EXT_V )
+		      if ( pd->v[0][VELOCITY1] && tran->Fill_Equation != FILL_EQN_EXT_V )
 		        {
 		          for ( a = 0; a < VIM; a++ )
 		            {
@@ -10422,7 +10422,7 @@ get_subelement_integration_pts ( double (**s)[DIM], double **weight, int **ip_si
   Integ_Elem * e;
   int num_gpts;
 
-  if(pd->v[LS]) 
+  if(pd->v[0][LS]) 
     {
       neg_elem_volume |= fail_courant_condition();
     }
@@ -11546,7 +11546,7 @@ subelement_surfdet( Integ_Elem * e,
   int nodes_per_side;
   int local_elem_node_id[MAX_NODES_PER_SIDE];
   int a, b;
-  int DeformingMesh = pd->e[R_MESH1];
+  int DeformingMesh = pd->e[0][R_MESH1];
   struct Basis_Functions *map_bf = bf[pd->ShapeVar];
 
   /* the requirements here can be a bit different than in for subelement_detJ */
@@ -11814,12 +11814,12 @@ compute_xfem_contribution( int N )
   
   for (eqn = V_FIRST; eqn < V_LAST;  eqn++)
     {
-      if ( pd->e[eqn] && eqn != R_FILL && eqn != R_EXT_VELOCITY )
+      if ( pd->e[0][eqn] && eqn != R_FILL && eqn != R_EXT_VELOCITY )
         {
           dV = bf[eqn]->detJ * fv->wt * fv->h3;
           for (i = 0; i < ei->dof[eqn]; i++ )
             {
-              xfem_dof_state( i, pd->i[eqn], ei->ielem_shape,
+              xfem_dof_state( i, pd->i[0][eqn], ei->ielem_shape,
                               &xfem_active, &extended_dof, &base_interp, &base_dof );
 	      /*fprintf(stderr,"compute_xfem_contribution: eqn=%d, i=%d, base_dof=%d, extended_dof=%d\n",eqn,i,base_dof,extended_dof);*/
               if (extended_dof)

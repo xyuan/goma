@@ -3720,7 +3720,7 @@ set_interaction_masks(Exo_DB *exo)
     for (e = 0; e < MAX_EQNS; e++) {
       for (v = 0; v < MAX_VARIABLE_TYPES; v++){
 	Inter_Mask[e][v] |=
-	   ( pd_glob[mn]->e[e] & eqn_var_mask[e][v] ) ? 1 : 0;
+	   ( pd_glob[mn]->e[0][e] & eqn_var_mask[e][v] ) ? 1 : 0;
       }
     }
   }
@@ -3987,7 +3987,7 @@ variable_type_nodalInterp(int var)
   if (Num_Var_In_Type[var]) {
     for (i = 0; i < upd->Num_Mat; i++)  {
       pd_local = pd_glob[i];
-      i_type = pd_local->i[var];
+      i_type = pd_local->i[0][var];
       if (i_type == I_Q1       ||
 	  i_type == I_Q2       ||
           i_type == I_Q1_G     ||

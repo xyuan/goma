@@ -889,8 +889,8 @@ create_truth_table(struct Results_Description *rd, Exo_DB *exo,
       continue;
     }
     for ( j = V_FIRST; j < V_LAST; j++) {
-      if ( pd_glob[mat_num]->v[j] != V_NOTHING ) {
-	if ( pd_glob[mat_num]->i[j] == I_P0 ) {
+      if ( pd_glob[mat_num]->v[0][j] != V_NOTHING ) {
+	if ( pd_glob[mat_num]->i[0][j] == I_P0 ) {
 	  if ( Num_Var_In_Type[j] > 1 ) {
 	    fprintf(stderr,
 		    "%s: Too many components in variable type for element variable %s (%s)\n",
@@ -981,8 +981,8 @@ create_truth_table(struct Results_Description *rd, Exo_DB *exo,
     ev_indx = 0;
     for ( j = V_FIRST; j < V_LAST; j++) {
       found_match = FALSE;
-      if ( pd_glob[mat_num]->v[j] != V_NOTHING ) {
-	if ( pd_glob[mat_num]->i[j] == I_P0 ) {
+      if ( pd_glob[mat_num]->v[0][j] != V_NOTHING ) {
+	if ( pd_glob[mat_num]->i[0][j] == I_P0 ) {
 	  if ( Num_Var_In_Type[j] > 1 ) {
 	    fprintf(stderr,
 		    "%s: Too many components in variable type for element variable %s (%s)\n",

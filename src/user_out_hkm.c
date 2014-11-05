@@ -178,7 +178,7 @@ usr_out_hkm(int status, double time, double dt, double *soln)
       
     /************** Fluid Mechanics Printouts  *****************************/
     var = VELOCITY1;
-    if (pd_local->v[var]) {
+    if (pd_local->v[0][var]) {
       SOLN_VALUES(var, 0, soln, &Tmax, &g_Tmax, &iTmax, &Tmin,
 		  &g_Tmin, &iTmin, &Tavg, mn);
 
@@ -186,7 +186,7 @@ usr_out_hkm(int status, double time, double dt, double *soln)
 		     Tavg);
     }
     var = VELOCITY2;
-    if (pd_local->v[var]) {
+    if (pd_local->v[0][var]) {
       SOLN_VALUES(var, 0, soln, &Tmax, &g_Tmax, &iTmax, &Tmin,
 		  &g_Tmin, &iTmin, &Tavg, mn);
 
@@ -194,7 +194,7 @@ usr_out_hkm(int status, double time, double dt, double *soln)
 		     Tavg);
     }
     var = VELOCITY3;
-    if (pd_local->v[var]) {
+    if (pd_local->v[0][var]) {
       SOLN_VALUES(var, 0, soln, &Tmax, &g_Tmax, &iTmax, &Tmin,
 		  &g_Tmin, &iTmin, &Tavg, mn);
 
@@ -202,7 +202,7 @@ usr_out_hkm(int status, double time, double dt, double *soln)
 		     Tavg);
     }
     var = PRESSURE;
-    if (pd_local->v[var]) {
+    if (pd_local->v[0][var]) {
       SOLN_VALUES(var, 0, soln, &Tmax, &g_Tmax, &iTmax, &Tmin,
 		  &g_Tmin, &iTmin, &Tavg, mn);
 
@@ -213,7 +213,7 @@ usr_out_hkm(int status, double time, double dt, double *soln)
     /************ Heat Transfer Printout ***********************************/
 
     var = TEMPERATURE;
-    if (pd_local->v[var]) {
+    if (pd_local->v[0][var]) {
       SOLN_VALUES(var, 0, soln, &Tmax, &g_Tmax, &iTmax, &Tmin,
 		  &g_Tmin, &iTmin, &Tavg, mn);
 
@@ -224,7 +224,7 @@ usr_out_hkm(int status, double time, double dt, double *soln)
     /*********** Mass Transfer Temporary Printouts *************************/
 
     var = MASS_FRACTION;
-    if (pd_local->v[var]) {
+    if (pd_local->v[0][var]) {
       /*
        *   Write out a SENKIN file for the first node on the 0th processor,
        *   if chemkin was used as the default database.

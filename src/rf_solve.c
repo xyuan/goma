@@ -1036,8 +1036,8 @@ solve_problem(Exo_DB *exo,	 /* ptr to the finite element mesh database  */
   		  double specmax[MAX_CONC],specmin[MAX_CONC],specavg, fraction;
  		  int eq_off = 0;
  
- 		  if(pd->e[R_ENERGY] )  eq_off++;
- 		  if(pd->e[R_MOMENTUM1] )  eq_off += pd->Num_Dim;
+ 		  if(pd->e[0][R_ENERGY] )  eq_off++;
+ 		  if(pd->e[0][R_MOMENTUM1] )  eq_off += pd->Num_Dim;
   		  inode = 0;
   		  for(i=0 ; i < (num_internal_dofs+num_boundary_dofs); i++) {
   			  vd = Index_Solution_Inv(i, &inode, NULL, &offset, &idof);
@@ -1542,7 +1542,7 @@ DPRINTF(stderr,"new surface value = %g \n",pp_volume[i]->params[pd->Num_Species]
        * Initial Start up (t=0) for the FILL/LEVEL_SET equations
        */
     
-      if (upd->ep[FILL] > -1  && nt == 0) 
+      if (upd->ep[0][FILL] > -1  && nt == 0) 
 	{ /*  Start of LS initialization */
 
 #ifndef COUPLED_FILL
@@ -1829,7 +1829,7 @@ DPRINTF(stderr,"new surface value = %g \n",pp_volume[i]->params[pd->Num_Species]
 
 
       ls_old = ls;
-      if(upd->vp[PHASE1] > -1 && nt == 0 )
+      if(upd->vp[0][PHASE1] > -1 && nt == 0 )
 	{ /* Start of Phase Function initialization */
 		  
 		  
@@ -1837,7 +1837,7 @@ DPRINTF(stderr,"new surface value = %g \n",pp_volume[i]->params[pd->Num_Species]
 		  if (pfd != NULL)
 		  {
 			struct Level_Set_Data *ls_save =ls;			
-			if (upd->vp[PHASE1] > -1)
+			if (upd->vp[0][PHASE1] > -1)
 			  {
 			    switch (pfd->ls[0]->Evolution) {
 			    case LS_EVOLVE_ADVECT_EXPLICIT:
@@ -2751,8 +2751,8 @@ DPRINTF(stderr,"new surface value = %g \n",pp_volume[i]->params[pd->Num_Species]
  		  double specmax[MAX_CONC],specmin[MAX_CONC],specavg, fraction;
 		  int eq_off = 0;
 
-		  if(pd->e[R_ENERGY] )  eq_off++;
-		  if(pd->e[R_MOMENTUM1] )  eq_off += pd->Num_Dim;
+		  if(pd->e[0][R_ENERGY] )  eq_off++;
+		  if(pd->e[0][R_MOMENTUM1] )  eq_off += pd->Num_Dim;
  		  inode = 0;
  		  for(i=0 ; i < (num_internal_dofs+num_boundary_dofs); i++) {
  			  vd = Index_Solution_Inv(i, &inode, NULL, &offset, &idof);
@@ -3400,7 +3400,7 @@ anneal_mesh(double x[], int tev, int tev_post, double *glob_vars_val,
   displacement_somewhere = FALSE;
 
   for(m = 0; m < upd->Num_Mat; m++)
-      displacement_somewhere |= ( pd_glob[m]->e[R_MESH1] );
+      displacement_somewhere |= ( pd_glob[m]->e[0][R_MESH1] );
 
   if ( !displacement_somewhere ) 
   {
@@ -3464,11 +3464,11 @@ anneal_mesh(double x[], int tev, int tev_post, double *glob_vars_val,
 			      PSI, 
 			      ei->dof_list[var][i], 
 			      ei->ielem_shape,
-			      pd->i[var],
+			      pd->i[0][var],
 			      i);
 	  }
 
-	  if( pd->v[var] )
+	  if( pd->v[0][var] )
 	  {
 	    for(j = 0; j < ei->dof[var]; j++)
 	    {

@@ -125,11 +125,11 @@ put_dirichlet_in_matrix(double x[], const int num_total_nodes)
 	      eqn = MAX_PROB_VAR + vd->Subvar_Index;
 	      var = eqn;
 	    } else {
-	      eqn = upd->ep[var_type];
-	      var = upd->vp[var_type];
+	      eqn = upd->ep[0][var_type];
+	      var = upd->vp[0][var_type];
 	    }
 
-	    if (pd->e[var_type])  /*Big test here.  We are no longer applying 
+	    if (pd->e[0][var_type])  /*Big test here.  We are no longer applying 
 				   dirichlets from materials that the variables 
 				   isn't defined */
 	      {

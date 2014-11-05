@@ -548,7 +548,7 @@ matrix_fill(
 
   err = bf_mp_init(pd);
   mn = ei->mn;
-  pde = (int*) pd->e;
+  pde = (int*) pd->e[0];
 
   
   for ( mode=0; mode<vn->modes; mode++)
@@ -565,25 +565,25 @@ matrix_fill(
   
   discontinuous_mass = 0;
 
-  if(pd->i[MASS_FRACTION]==I_P1)
+  if(pd->i[0][MASS_FRACTION]==I_P1)
     {
       if (pd->Num_Dim == 2) ielem_type_mass = P1_QUAD;
       if (pd->Num_Dim == 3) ielem_type_mass = P1_HEX;
       discontinuous_mass = 1;
     }
-  else if(pd->i[MASS_FRACTION]==I_P0)
+  else if(pd->i[0][MASS_FRACTION]==I_P0)
     {
       if (pd->Num_Dim == 2) ielem_type_mass = P0_QUAD;
       if (pd->Num_Dim == 3) ielem_type_mass = P0_HEX;
       discontinuous_mass = 1;
     }
-  else if(pd->i[MASS_FRACTION]==I_PQ1)
+  else if(pd->i[0][MASS_FRACTION]==I_PQ1)
     {
       if (pd->Num_Dim == 2) ielem_type_mass = BILINEAR_QUAD;
       if (pd->Num_Dim == 3) EH(-1,"Sorry PQ1 interpolation has not been implemented in 3D yet.");
       discontinuous_mass = 1;
     }
-  else if(pd->i[MASS_FRACTION]==I_PQ2)
+  else if(pd->i[0][MASS_FRACTION]==I_PQ2)
     {
       if (pd->Num_Dim == 2) ielem_type_mass = BIQUAD_QUAD;
       if (pd->Num_Dim == 3) EH(-1,"Sorry PQ2 interpolation has not been implemented in 3D yet.");
@@ -596,20 +596,20 @@ matrix_fill(
   
   discontinuous_stress = 0;
   
-  if(pd->i[POLYMER_STRESS11]==I_P1)
+  if(pd->i[0][POLYMER_STRESS11]==I_P1)
     {
       discontinuous_stress = 1;
     }
-  else if(pd->i[POLYMER_STRESS11]==I_P0)
+  else if(pd->i[0][POLYMER_STRESS11]==I_P0)
     {
       discontinuous_stress = 1;
     }
-  else if(pd->i[POLYMER_STRESS11]==I_PQ1)
+  else if(pd->i[0][POLYMER_STRESS11]==I_PQ1)
     {
       if (pd->Num_Dim == 3) EH(-1,"Sorry PQ1 interpolation has not been implemented in 3D yet.");
       discontinuous_stress = 1;
     }
-  else if(pd->i[POLYMER_STRESS11]==I_PQ2)
+  else if(pd->i[0][POLYMER_STRESS11]==I_PQ2)
     {
       if (pd->Num_Dim == 3) EH(-1,"Sorry PQ2 interpolation has not been implemented in 3D yet.");
       discontinuous_stress = 1;
@@ -631,7 +631,7 @@ matrix_fill(
 #endif /* DEBUG */
 
   /* subgrid or subelement integration setup */
-  if( pd->v[FILL] && ls != NULL && ls->Integration_Depth > 0 &&
+  if( pd->v[0][FILL] && ls != NULL && ls->Integration_Depth > 0 &&
       ls->elem_overlap_state )
     {
       Subgrid_Int.active = TRUE;
@@ -651,7 +651,7 @@ matrix_fill(
       print_subgrid_integration_pts ( Subgrid_Int.s, Subgrid_Int.wt, Subgrid_Int.ip_total );
 #endif
     }
-  else if( pd->v[FILL] && ls != NULL &&
+  else if( pd->v[0][FILL] && ls != NULL &&
            ls->SubElemIntegration && 
 	   ls->elem_overlap_state )
     {
@@ -674,7 +674,7 @@ matrix_fill(
       print_subgrid_integration_pts ( Subgrid_Int.s, Subgrid_Int.wt, Subgrid_Int.ip_total );
 #endif
     }
-  else if( pd->v[FILL] && ls != NULL && ls->AdaptIntegration && ls->elem_overlap_state )
+  else if( pd->v[0][FILL] && ls != NULL && ls->AdaptIntegration && ls->elem_overlap_state )
     {Subgrid_Int.active = TRUE;}
   else
     {
@@ -841,8 +841,8 @@ matrix_fill(
 		if(af->Assemble_Residual)
 		  {
 		    lm_dof = ei->gun_list[R_LAGR_MULT1 + b][i];
-		    eqn = upd->ep[R_LAGR_MULT1 + b];
-		    var = upd->vp[LAGR_MULT1 + b];
+		    eqn = upd->ep[0][R_LAGR_MULT1 + b];
+		    var = upd->vp[0][LAGR_MULT1 + b];
 		    lec->R[eqn][i] = x[lm_dof];
 		  }
        
@@ -864,8 +864,8 @@ matrix_fill(
 	      for (i = 0; i < ei->dof[R_LAGR_MULT1 + b]; i++) {
 		if(af->Assemble_Residual)
 		  {
-		    eqn = upd->ep[R_LAGR_MULT1 + b];
-		    var = upd->vp[LAGR_MULT1 + b];
+		    eqn = upd->ep[0][R_LAGR_MULT1 + b];
+		    var = upd->vp[0][LAGR_MULT1 + b];
 		    lec->R[eqn][i] = 0.;
 		  }
        
@@ -895,17 +895,17 @@ matrix_fill(
 
   if (pde[R_SOLID1])
     {
-      if (pd->etm[R_SOLID1][(LOG2_MASS)]) EH(-1,"Cannot do real inertia for TALE yet. Remove this line if trying to perform EULERIAN solid mechanics");
+      if (pd->etm[0][R_SOLID1][(LOG2_MASS)]) EH(-1,"Cannot do real inertia for TALE yet. Remove this line if trying to perform EULERIAN solid mechanics");
       eqn = R_SOLID1;
       if (pd->TimeIntegration != STEADY && 
-	  pd->etm[R_SOLID1][(LOG2_MASS)] &&
+	  pd->etm[0][R_SOLID1][(LOG2_MASS)] &&
 	  !ls->elem_overlap_state &&
 	  *esp->F[0] >= 0.0)
 	{
 	  for (i = 0; i < ei->dof[eqn]; i++)
 	    {
 	      make_trivial = TRUE;
-	      if ( (pd->i[eqn] == I_Q1) || (pd->i[eqn] == I_Q2 ) )
+	      if ( (pd->i[0][eqn] == I_Q1) || (pd->i[0][eqn] == I_Q2 ) )
 		{
 		  /* check all neighboring elements to see if any 
 		     span the interface */
@@ -931,8 +931,8 @@ matrix_fill(
 		  for (i = 0; i < ei->dof[R_SOLID1 + b]; i++) {
 		    if(af->Assemble_Residual)
 		      {
-			eqn = upd->ep[R_SOLID1 + b];
-			var = upd->vp[R_SOLID1 + b];
+			eqn = upd->ep[0][R_SOLID1 + b];
+			var = upd->vp[0][R_SOLID1 + b];
 			lec->R[eqn][i] = 0.;
 		      }
 			     
@@ -1371,7 +1371,7 @@ matrix_fill(
        * we really need this information...
        */
       
-      if (pde[R_MESH1] || pd->v[R_MESH1])
+      if (pde[R_MESH1] || pd->v[0][R_MESH1])
 	{
 	  err = load_bf_mesh_derivs(); 
 	  EH( err, "load_bf_mesh_derivs");
@@ -1384,7 +1384,7 @@ matrix_fill(
       err = load_fv_grads();
       EH( err, "load_fv_grads");	  
             
-      if ( pde[R_MESH1] ||  pd->v[R_MESH1])
+      if ( pde[R_MESH1] ||  pd->v[0][R_MESH1])
 	{
 	  err = load_fv_mesh_derivs(1);
 	  EH( err, "load_fv_mesh_derivs");
@@ -2813,12 +2813,12 @@ matrix_fill(
 	  if(node->DBSH_SLOPE_X == 1)
 	    {
 	      eqn = R_MESH1;
-	      lec->R[upd->ep[eqn]][i] = 1.0*BIG_PENALTY;
+	      lec->R[upd->ep[0][eqn]][i] = 1.0*BIG_PENALTY;
 	    }
 	  if(node->DBSH_SLOPE_Y == 1)
 	    {
 	      eqn = R_MESH2;
-	      lec->R[upd->ep[eqn]][i] = 0.0*BIG_PENALTY;
+	      lec->R[upd->ep[0][eqn]][i] = 0.0*BIG_PENALTY;
 	    }
 	}
     }
@@ -2834,8 +2834,8 @@ matrix_fill(
      * system equivalent to the identity problem, "I x = 0". */
     for(i = 0; i < MDE; i++)
       {
-	eqn = upd->ep[R_MOMENTUM3];
-	var = upd->vp[VELOCITY3];
+	eqn = upd->ep[0][R_MOMENTUM3];
+	var = upd->vp[0][VELOCITY3];
 	zero_lec_row(lec->J, eqn, i);
 	zero_lec_column(lec->J, var, i);
 	lec->J[eqn][var][i][i] = 1.0;
@@ -2861,11 +2861,11 @@ matrix_fill(
       int peqn, pvar;
       for (eqn = V_FIRST; eqn < V_LAST;  eqn++)
         {
-          peqn = upd->ep[eqn];
+          peqn = upd->ep[0][eqn];
           if ( peqn != -1 && eqn != R_FILL )
             {
               var = FILL;
-              pvar = upd->vp[var];
+              pvar = upd->vp[0][var];
               for (i = 0; i < ei->dof[eqn]; i++)
                 {
                   for (j = 0; j < ei->dof[var]; j++)
@@ -2885,11 +2885,11 @@ matrix_fill(
       int peqn, pvar;
       for (eqn = V_FIRST; eqn < V_LAST;  eqn++)
         {
-          peqn = upd->ep[eqn];
+          peqn = upd->ep[0][eqn];
           if ( peqn != -1 && eqn != R_PHASE1 )
             {
               var = PHASE1;
-              pvar = upd->vp[var];
+              pvar = upd->vp[0][var];
               for (i = 0; i < ei->dof[eqn]; i++)
                 {
                   for (j = 0; j < ei->dof[var]; j++)
@@ -3072,7 +3072,7 @@ load_lec(Exo_DB *exo,		/* ptr to EXODUS II finite element mesh db */
 	    kt = upd->Max_Num_Species_Eqn;
 	  }
 	  for (w = 0 ; w < kt; w++) {
-	    peqn = upd->ep[j];		      
+	    peqn = upd->ep[0][j];		      
 	    if (peqn != -1) {
 	      if (j == MASS_FRACTION) peqn = MAX_PROB_VAR + w;
 	      idof = ei->ln_to_first_dof[j][i];
@@ -3090,7 +3090,7 @@ load_lec(Exo_DB *exo,		/* ptr to EXODUS II finite element mesh db */
 		      kt1 = 1;
 		      if (k == MASS_FRACTION) kt1 = upd->Max_Num_Species_Eqn;
 		      for (w1 = 0 ; w1 < kt1; w1++) {
-			pvar = upd->vp[k]; 
+			pvar = upd->vp[0][k]; 
 			if (k == MASS_FRACTION) pvar = MAX_PROB_VAR + w1;
 			if (pvar != -1) {
 
@@ -3138,7 +3138,7 @@ load_lec(Exo_DB *exo,		/* ptr to EXODUS II finite element mesh db */
 	    kt = 1;
 	    if (j == MASS_FRACTION) kt = upd->Max_Num_Species_Eqn;
 	    for (w = 0 ; w < kt; w++) {
-	      peqn = upd->ep[j];
+	      peqn = upd->ep[0][j];
 	      if (peqn != -1) {
 		if (j == MASS_FRACTION) peqn = MAX_PROB_VAR + w;
 		idof = ei->ln_to_first_dof[j][i];
@@ -3170,7 +3170,7 @@ load_lec(Exo_DB *exo,		/* ptr to EXODUS II finite element mesh db */
 				kt1 = upd->Max_Num_Species_Eqn;
 			      }    
 			      for (w1 = 0 ; w1 < kt1; w1++) {
-				pvar = upd->vp[k]; 
+				pvar = upd->vp[0][k]; 
 				if (k == MASS_FRACTION) pvar = MAX_PROB_VAR + w1;
 				if (pvar != -1) {
 				  if (ei->owningElementForColVar[k] != ielem) {
@@ -3216,7 +3216,7 @@ load_lec(Exo_DB *exo,		/* ptr to EXODUS II finite element mesh db */
      * since Randy says it is needed for frontal solver
      */
     for (e = V_FIRST; e < V_LAST; e++) {
-      pe = upd->ep[e];
+      pe = upd->ep[0][e];
       if (pe != -1) {
 	if (e == R_MASS) {
 	  for (ke = 0; ke < upd->Max_Num_Species_Eqn; ke++) {
@@ -3256,7 +3256,7 @@ load_lec(Exo_DB *exo,		/* ptr to EXODUS II finite element mesh db */
       int   *ija = ams->bindx;
 	  
       for (e = V_FIRST; e < V_LAST; e++) {
-	pe = upd->ep[e];
+	pe = upd->ep[0][e];
 	if (pe != -1) {
 	  if (e == R_MASS) {
 	    for (ke = 0; ke < upd->Max_Num_Species_Eqn; ke++) {
@@ -3291,7 +3291,7 @@ load_lec(Exo_DB *exo,		/* ptr to EXODUS II finite element mesh db */
 
 		  if (af->Assemble_Jacobian) {
 		    for (v=V_FIRST; v<V_LAST; v++) {
-		      pv = upd->vp[v];
+		      pv = upd->vp[0][v];
 		      if (pv != -1 && (Inter_Mask[e][v])) {
 			ei_ptr = ei;
 			if (ei->owningElementForColVar[v] != ielem) {
@@ -3341,7 +3341,7 @@ load_lec(Exo_DB *exo,		/* ptr to EXODUS II finite element mesh db */
 			    }
 			  }
 			} else {
-			  pv = upd->vp[v];
+			  pv = upd->vp[0][v];
 			  kv = 0;
 			  for (j = 0; j < ei_ptr->dof[v]; j++) {
 			    ledof = ei_ptr->lvdof_to_ledof[v][j];
@@ -3378,7 +3378,7 @@ load_lec(Exo_DB *exo,		/* ptr to EXODUS II finite element mesh db */
 	      }
 	    }
 	  } else {
-	    pe = upd->ep[e];
+	    pe = upd->ep[0][e];
 	    dofs = ei->dof[e];
 	    for (i = 0; i < dofs; i++) {
 	      /*
@@ -3405,7 +3405,7 @@ load_lec(Exo_DB *exo,		/* ptr to EXODUS II finite element mesh db */
 
 		if (af->Assemble_Jacobian) {
 		  for (v = V_FIRST; v < V_LAST; v++) {
-		    pv = upd->vp[v];
+		    pv = upd->vp[0][v];
 		    if (pv != -1 && (Inter_Mask[e][v])) {
 		      if (v == MASS_FRACTION) {
 	       
@@ -3531,7 +3531,7 @@ load_lec(Exo_DB *exo,		/* ptr to EXODUS II finite element mesh db */
 		row_dofs = rpntr[I+1] - rpntr[I];
 		for (e = V_FIRST; e < V_LAST; e++)
 		  {
-		    pe = upd->ep[e];
+		    pe = upd->ep[0][e];
 		    if (pe != -1)
 		      {
 			if (e == R_MASS)
@@ -3549,7 +3549,7 @@ load_lec(Exo_DB *exo,		/* ptr to EXODUS II finite element mesh db */
 				      {
 					for (v = V_FIRST; v < V_LAST; v++)
 					  {
-					    pv = upd->vp[v];
+					    pv = upd->vp[0][v];
 					    if ((pv != -1) && (Inter_Mask[e][v])) 
 					      {
 						// NEW
@@ -3611,7 +3611,7 @@ load_lec(Exo_DB *exo,		/* ptr to EXODUS II finite element mesh db */
 				  {
 				    for (v = V_FIRST; v < V_LAST; v++) 
 				      {
-					pv = upd->vp[v];
+					pv = upd->vp[0][v];
 					if ((pv != -1) && (Inter_Mask[e][v]))
 					  {
 					    // NEW
@@ -3722,7 +3722,7 @@ checkfinite(const char *file, const int line, const char *message)
   /*     } */
   for (eqn = V_FIRST; eqn < V_LAST; eqn++)
     {
-      peqn = upd->ep[eqn];
+      peqn = upd->ep[0][eqn];
       if (peqn != -1)
         {
           for (i = 0; i < ei->dof[eqn]; i++)
@@ -3735,7 +3735,7 @@ checkfinite(const char *file, const int line, const char *message)
               }
               for (var = V_FIRST; var < V_LAST;  var++)
                 {
-                  pvar = upd->vp[var];
+                  pvar = upd->vp[0][var];
                   if (pvar != -1)
                     {
 		      ei_ptr = ei;
@@ -3789,7 +3789,7 @@ int load_pf_constraint(double pf_constraint,
   for (i = 0; i < pfd->num_phase_funcs; i++ )
     {
       var = PHASE1 + i;
-      if (pd->v[var])
+      if (pd->v[0][var])
 	{
 	  for (j = 0; j < ei->dof[var]; j++)
 	    {

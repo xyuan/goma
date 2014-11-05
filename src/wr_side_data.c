@@ -232,7 +232,7 @@ ns_data_print(pp_Data * p,
 	     *  If we have an element based interpolation, let's calculate the interpolated value
 	     */
 	    if (quantity == PRESSURE) {
-	      if ((pd->i[PRESSURE] == I_P1) || ( (pd->i[PRESSURE] > I_PQ1) && (pd->i[PRESSURE] < I_Q2_HVG) )) {
+	      if ((pd->i[0][PRESSURE] == I_P1) || ( (pd->i[0][PRESSURE] > I_PQ1) && (pd->i[0][PRESSURE] < I_Q2_HVG) )) {
 		doPressure = 1;
 	      }
 	    }

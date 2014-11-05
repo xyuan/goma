@@ -228,10 +228,10 @@ solve_full_stability_problem(struct Aztec_Linear_Solver_System *ams,
 	{
 	  pd_glob[mn]->TimeIntegration = TRANSIENT;
 	  for(i = 0; i < MAX_EQNS; i++)
-	    if(pd_glob[mn]->e[i])
+	    if(pd_glob[mn]->e[0][i])
 	      {
-		pd_glob[mn]->e[i] |= T_MASS;
-		pd_glob[mn]->etm[i][LOG2_MASS] = 1.0;
+		pd_glob[mn]->e[0][i] |= T_MASS;
+		pd_glob[mn]->etm[0][i][LOG2_MASS] = 1.0;
 	      }
 	}
 
@@ -289,15 +289,15 @@ solve_full_stability_problem(struct Aztec_Linear_Solver_System *ams,
       for(i = 0; i < MAX_EQNS; i++)
 	/* MMH: Note that there is apparently no support for
 	 * multiple species equations. */
-	if(pd_glob[mn]->e[i])
+	if(pd_glob[mn]->e[0][i])
 	  {
 	    /*
 	      printf("Equation %d is on.\n",i);
 	    */
-	    pd_glob[mn]->e[i] = T_MASS;
+	    pd_glob[mn]->e[0][i] = T_MASS;
 	    for (j=0;j<MAX_TERM_TYPES;j++)
-	      pd_glob[mn]->etm[i][j] = 0.0;
-	    pd_glob[mn]->etm[i][LOG2_MASS] = 1.0;
+	      pd_glob[mn]->etm[0][i][j] = 0.0;
+	    pd_glob[mn]->etm[0][i][LOG2_MASS] = 1.0;
 	  }
     }
 
@@ -440,9 +440,9 @@ solve_3D_of_2D_stability_problem(struct Aztec_Linear_Solver_System *ams,
   for(mn = 0; mn < upd->Num_Mat; mn++)
     for(i = 0; i < MAX_EQNS; i++)
       {
-	e_save[mn][i] = pd_glob[mn]->e[i];
+	e_save[mn][i] = pd_glob[mn]->e[0][i];
 	for(j = 0; j < MAX_TERM_TYPES; j++)
-	  etm_save[mn][i][j] = pd_glob[mn]->etm[i][j];
+	  etm_save[mn][i][j] = pd_glob[mn]->etm[0][i][j];
       }
 
   /* Allocate mass matrices */
@@ -473,7 +473,7 @@ solve_3D_of_2D_stability_problem(struct Aztec_Linear_Solver_System *ams,
       printf("Solving for wave number %d out of %d.  WAVE NUMBER = %g\n", wn
 	     + 1, LSA_number_wave_numbers, LSA_3D_of_2D_wave_number); 
       
-      /* Get the original pd_glob[mn]->e[i] and pd_glob[mn]->etm[i][*] 
+      /* Get the original pd_glob[mn]->e[0][i] and pd_glob[mn]->etm[0][i][*] 
        * values back. */
       TimeIntegration = STEADY;
       theta = 0.0;
@@ -481,9 +481,9 @@ solve_3D_of_2D_stability_problem(struct Aztec_Linear_Solver_System *ams,
 	for(i = 0; i < MAX_EQNS; i++)
 	  {
 	    pd_glob[mn]->TimeIntegration = STEADY;
-	    pd_glob[mn]->e[i] = e_save[mn][i];
+	    pd_glob[mn]->e[0][i] = e_save[mn][i];
 	    for(j = 0; j < MAX_TERM_TYPES; j++)
-	      pd_glob[mn]->etm[i][j] = etm_save[mn][i][j];
+	      pd_glob[mn]->etm[0][i][j] = etm_save[mn][i][j];
 	  }
       
       /* Jacobian matrix, pass 1 */
@@ -561,10 +561,10 @@ solve_3D_of_2D_stability_problem(struct Aztec_Linear_Solver_System *ams,
 	{
 	  pd_glob[mn]->TimeIntegration = TRANSIENT;
 	  for(i = 0; i < MAX_EQNS; i++)
-	    if(pd_glob[mn]->e[i])
+	    if(pd_glob[mn]->e[0][i])
 	      {
-		pd_glob[mn]->e[i] |= T_MASS;
-		pd_glob[mn]->etm[i][LOG2_MASS] = 1.0;
+		pd_glob[mn]->e[0][i] |= T_MASS;
+		pd_glob[mn]->etm[0][i][LOG2_MASS] = 1.0;
 	      }
 	}
 
@@ -647,12 +647,12 @@ solve_3D_of_2D_stability_problem(struct Aztec_Linear_Solver_System *ams,
       for(mn = 0; mn < upd->Num_Mat; mn++) 
 	{
 	  for(i = 0; i < MAX_EQNS; i++)
-	    if(pd_glob[mn]->e[i])
+	    if(pd_glob[mn]->e[0][i])
 	      {
-		pd_glob[mn]->e[i] = T_MASS;
+		pd_glob[mn]->e[0][i] = T_MASS;
 		for (j = 0; j < MAX_TERM_TYPES; j++)
-		  pd_glob[mn]->etm[i][j] = 0.0;
-		pd_glob[mn]->etm[i][LOG2_MASS] = 1.0;
+		  pd_glob[mn]->etm[0][i][j] = 0.0;
+		pd_glob[mn]->etm[0][i][LOG2_MASS] = 1.0;
 	      }
 	}
 

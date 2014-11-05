@@ -230,7 +230,7 @@ static double jacobian_metric(Exo_DB *exo, double *x, int *proc_config)
     {
 
       /* Set up ei pointers and get node coordinates */
-      bd = ( (pd->e[R_MESH1]) ? bf[R_MESH1] : bf[pd->ShapeVar] );
+      bd = ( (pd->e[0][R_MESH1]) ? bf[R_MESH1] : bf[pd->ShapeVar] );
       load_ei(ielem, exo, 0);
       ngp = elem_info(NQUAD, ei->ielem_type);
       dofs = ei->dof[pd->ShapeVar];
@@ -539,7 +539,7 @@ static void load_vertex_xy(Exo_DB *exo, int ielem,
   int DM = FALSE;
 
   load_ei(ielem, exo, 0);
-  DM = (pd_glob[ei->mn]->e[R_MESH1]);
+  DM = (pd_glob[ei->mn]->e[0][R_MESH1]);
   for (i=0; i<pd->Num_Dim; i++)
     {
       for (k=0; k<dofs; k++)

@@ -2332,9 +2332,9 @@ void mass_matrix_fill_conwrap(double *x, double *rhs)
   for(mn = 0; mn < upd->Num_Mat; mn++)
     for(i = 0; i < MAX_EQNS; i++)
       {
-        e_save[mn][i] = pd_glob[mn]->e[i];
+        e_save[mn][i] = pd_glob[mn]->e[0][i];
         for(j = 0; j < MAX_TERM_TYPES; j++)
-          etm_save[mn][i][j] = pd_glob[mn]->etm[i][j];
+          etm_save[mn][i][j] = pd_glob[mn]->etm[0][i][j];
       }
 
 /* Get global element size and velocity norm if needed for PSPG or Cont_GLS */
@@ -2428,11 +2428,11 @@ void mass_matrix_fill_conwrap(double *x, double *rhs)
     {
       pd_glob[mn]->TimeIntegration = TRANSIENT;
       for(i = 0; i < MAX_EQNS; i++)
-        if(pd_glob[mn]->e[i])
+        if(pd_glob[mn]->e[0][i])
           {
-            pd_glob[mn]->e[i] = T_MASS;
-            for (j=0; j<MAX_TERM_TYPES; j++) pd_glob[mn]->etm[i][j] = 0.0;
-            pd_glob[mn]->etm[i][LOG2_MASS] = 1.0;
+            pd_glob[mn]->e[0][i] = T_MASS;
+            for (j=0; j<MAX_TERM_TYPES; j++) pd_glob[mn]->etm[0][i][j] = 0.0;
+            pd_glob[mn]->etm[0][i][LOG2_MASS] = 1.0;
           }
     }
 
@@ -2506,9 +2506,9 @@ void mass_matrix_fill_conwrap(double *x, double *rhs)
     for(i = 0; i < MAX_EQNS; i++)
       {
         pd_glob[mn]->TimeIntegration = STEADY;
-        pd_glob[mn]->e[i] = e_save[mn][i];
+        pd_glob[mn]->e[0][i] = e_save[mn][i];
         for(j = 0; j < MAX_TERM_TYPES; j++)
-          pd_glob[mn]->etm[i][j] = etm_save[mn][i][j];
+          pd_glob[mn]->etm[0][i][j] = etm_save[mn][i][j];
       }
 
   /* Print matrices -- Careful, these can be big disk space hogs!! */
@@ -3145,7 +3145,7 @@ void calc_scale_vec_conwrap(double *x, double *scale_vec, int numUnks)
 	    {
 
   /* Adjust nvd to allow for separate treatment of the three pressure vars */
-              if (pd_glob[i]->i[p] == ip1) passdown.nvd += 2;
+              if (pd_glob[i]->i[0][p] == ip1) passdown.nvd += 2;
 	    }
 
   /* Allocate arrays needed to calculate scale vector */

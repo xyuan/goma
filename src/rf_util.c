@@ -463,7 +463,7 @@ filter_conc (const int N,	/* number of nodes */
   const double minimum_shear_rate = 0.0;
   int i, ie;
   
-  if (pd->e[R_MASS]) {
+  if (pd->e[0][R_MASS]) {
     for (i = 0; i < N; i++) {
       if (Dolphin[i][R_MASS]) {
 	ie = Index_Solution(i, R_MASS, filter_species_material_number,
@@ -477,7 +477,7 @@ filter_conc (const int N,	/* number of nodes */
       }
     }
   }
-  if (pd->e[R_SHEAR_RATE])  {
+  if (pd->e[0][R_SHEAR_RATE])  {
     for (i = 0; i < N; i++) {
       if (Dolphin[i][R_SHEAR_RATE]) {
 	ie = Index_Solution(i, R_SHEAR_RATE, 0, 0, -1); 
@@ -628,7 +628,7 @@ time_step_control(const double delta_t,  const double delta_t_old,
         int interp;
         double F, Fold;
         if ( MatID == -1 ) MatID = 0;
-        interp = pd_glob[MatID]->i[eqn];
+        interp = pd_glob[MatID]->i[0][eqn];
         
         if ( is_xfem_interp( interp ) )
           {
@@ -1376,13 +1376,13 @@ init_vec(double u[], Comm_Ex *cx, Exo_DB *exo, Dpi *dpi, double uAC[],
     /* Some Special Cases */
 
     /* Structural shell variables */
-    if ( upd->vp[SHELL_X] && upd->vp[SHELL_Y])
+    if ( upd->vp[0][SHELL_X] && upd->vp[0][SHELL_Y])
       {
 	init_structural_shell_coord(u);
       }
 
     /* Shell normal vector unknowns requiring initialization */
-    if ( upd->vp[SHELL_NORMAL1] > -1 && upd->vp[SHELL_NORMAL2] > -1 )
+    if ( upd->vp[0][SHELL_NORMAL1] > -1 && upd->vp[0][SHELL_NORMAL2] > -1 )
       {
 	init_shell_normal_unknowns(u, exo, 10, 0.0, 0.0);
       }
@@ -1666,7 +1666,7 @@ init_vec(double u[], Comm_Ex *cx, Exo_DB *exo, Dpi *dpi, double uAC[],
 	     * a valid interpolation for that variable in the
 	     * current element block
 	     */
-	    if (nunks > 0 && pd->i[var] && !slaved) {
+	    if (nunks > 0 && pd->i[0][var] && !slaved) {
 	      /*
 	       * Check against ktype here to make sure we have 
 	       * an associated unknown
@@ -1687,7 +1687,7 @@ init_vec(double u[], Comm_Ex *cx, Exo_DB *exo, Dpi *dpi, double uAC[],
 		 *  HKM -> we can't take this block out, until we
 		 *         get rid of the debugging section below.
 		 */
-		interpType = pd->i[var];
+		interpType = pd->i[0][var];
 		if (interpType == I_P0 || interpType == I_P1) {
 		  /*
 		   *  For P0 and P1 interpolation, only first dof is set
@@ -1870,7 +1870,7 @@ void init_structural_shell_coord(double u[])
 				       *never get here for 3D */
     {
       var = SHELL_X + comp;
-      if ( upd->vp[var] )
+      if ( upd->vp[0][var] )
 	{
 	  for (node = 0; node < Num_Node; node++ )
 	    {
@@ -3014,7 +3014,7 @@ find_first_elem_with_var ( Exo_DB *e, int var )
     {
       mn = Matilda[ eb ];
       
-      found = pd_glob[mn]->v[var];
+      found = pd_glob[mn]->v[0][var];
       if( found ) first_elem = e->eb_ptr[eb];
     }
 

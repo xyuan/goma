@@ -72,7 +72,7 @@ dof_lnode_var_type(const int n, const int Element_Type,
   /*
    * Store the interpolation type for the input variable
    */
-  interp_type =  pd_ptr->i[var_type];
+  interp_type =  pd_ptr->i[0][var_type];
 
   /*
    * Store whether this node is on an edge of the grid or not

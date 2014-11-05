@@ -1394,7 +1394,7 @@ assembly_alloc(Exo_DB *exo)
 	  for (mn = 0; mn < upd->Num_Mat; mn++) {
 	    for (vi = 0; ((bfd[type]->Var_Type_MatID[mn] == -1) &&
 			  (vi < MAX_VARIABLE_TYPES)); vi++) {
-	      if (pd_glob[mn]->i[vi] == bfd[type]->interpolation) {
+	      if (pd_glob[mn]->i[0][vi] == bfd[type]->interpolation) {
 		bfd[type]->Var_Type_MatID[mn] = vi;
 	      }
 	    }
@@ -1593,7 +1593,7 @@ bf_init(Exo_DB *exo)
 	    /*
 	     * Is this variable active in the problem?
 	     */
-	    if ( pd_glob[m]->v[v] )
+	    if ( pd_glob[m]->v[0][v] )
 	      {
 		/*
 		 * If so, then check to see which prototype basis function of
@@ -1602,7 +1602,7 @@ bf_init(Exo_DB *exo)
 		 */
 		for ( t=0; t<Num_Basis_Functions; t++)
 		  {
-		    if ( pd_glob[m]->i[v] == bfd[t]->interpolation
+		    if ( pd_glob[m]->i[0][v] == bfd[t]->interpolation
 			 && shape == bfd[t]->element_shape )
 		      {
 			if (bf[v] != 0) {
@@ -1672,16 +1672,16 @@ bf_mp_init(struct Problem_Description *pd)
        */
 #ifdef DEBUG_HKM
       if (ei->ielem == 165 && v == 5) {
-        if (pd->v[v] > 0 && pd->v[v] != 1) {
+        if (pd->v[0][v] > 0 && pd->v[0][v] != 1) {
 	  //	  printf("bf_mp_init: we are at elem 165, v = 5, v[v] = 4\n");
           t = 0;
 	}
       }
-       if (pd->v[v])
-      //if (pd->v[v] == 1) 
+       if (pd->v[0][v])
+      //if (pd->v[0][v] == 1) 
 	{
 #else
-      if (pd->v[v]) 
+      if (pd->v[0][v]) 
 	{
 #endif
 	
@@ -1698,7 +1698,7 @@ bf_mp_init(struct Problem_Description *pd)
 	      fprintf(stderr, "bfd[0] is at %p\n", bfd[0]);
 	      fprintf(stderr, "checking t = %d\n", t);
 #endif
-	      if ((pd->i[v] == bfd[t]->interpolation)
+	      if ((pd->i[0][v] == bfd[t]->interpolation)
                    && (shape == bfd[t]->element_shape))
 		{
 		  bf[v] = bfd[t];

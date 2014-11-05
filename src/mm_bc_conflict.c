@@ -558,7 +558,7 @@ check_for_bc_conflicts2D(Exo_DB *exo, Dpi *dpi)
 		case POLYMER_STRESS22_7:
 		  {
 		    /* used material index determined for last element on the current side set */
-		    switch(pd_glob[matIndex]->i[varType])
+		    switch(pd_glob[matIndex]->i[0][varType])
 		      {
 		      case I_P0:
 		      case I_P1:
