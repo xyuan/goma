@@ -816,7 +816,7 @@ $(RELEASE_OBJ_DIR)/%.o: %.F
 $(RELEASE_OBJ_DIR)/%.o: %.C
 	@mkdir -p $(RELEASE_OBJ_DIR)
 	$(CXX) -c $(CXXFLAGS) -o $@ $^
-	
+
 $(RELEASE_OBJ_DIR)/%.o: %.cpp
 	@mkdir -p $(RELEASE_OBJ_DIR)
 	$(CXX) -c $(CXXFLAGS) -o $@ $^
@@ -833,7 +833,7 @@ $(DEBUG_OBJ_DIR)/%.o: %.F
 $(DEBUG_OBJ_DIR)/%.o: %.C
 	@mkdir -p $(DEBUG_OBJ_DIR)
 	$(CXX) -c $(CXXFLAGS) -o $@ $^
-	
+
 $(DEBUG_OBJ_DIR)/%.o: %.cpp
 	@mkdir -p $(RELEASE_OBJ_DIR)
 	$(CXX) -c $(CXXFLAGS) -o $@ $^

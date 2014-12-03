@@ -6571,15 +6571,18 @@ rd_solver_specs(FILE *ifp,
   /* look for optional flags specifying dependencies to ignore */
   {
     int eq, var;
-    
-    for (eq=0; eq<MAX_VARIABLE_TYPES; eq++)
-      {
-	for (var=0; var<MAX_VARIABLE_TYPES; var++)
-	  {
-	    Ignore_Deps[eq][var] = FALSE;
-	  }
-      }
-    
+    int imtrx;    
+
+    for (imtrx = 0; imtrx < upd->Total_Num_Matrices; imtrx++)
+       {
+        for (eq=0; eq<MAX_VARIABLE_TYPES; eq++)
+           {
+	    for (var=0; var<MAX_VARIABLE_TYPES; var++)
+	       {
+	        Ignore_Deps[imtrx][eq][var] = FALSE;
+	       }
+           }
+       }
     while ((iread = look_forward_optional(ifp,"Ignore Dependency",input,'=')) == 1) {
       int eq_found = FALSE;
       int var_found = FALSE;
@@ -6617,50 +6620,55 @@ rd_solver_specs(FILE *ifp,
       
       if ( !strcmp(input, "all") || !strcmp(input, "ALL") )
         {
-	  for (var=0; var<MAX_VARIABLE_TYPES; var++)
-	    {
-	      if ( var != eq ) /* keep this entry only */
-	        {
-	          if ( symmetric_flag )
+          for (imtrx = 0; imtrx < upd->Total_Num_Matrices; imtrx++)
+             {
+	      for (var=0; var<MAX_VARIABLE_TYPES; var++)
+	         {
+	          if ( var != eq ) /* keep this entry only */
 	            {
-	              Ignore_Deps[eq][var] = TRUE;
-	              Ignore_Deps[var][eq] = TRUE;
+	             if ( symmetric_flag )
+	               {
+	                Ignore_Deps[imtrx][eq][var] = TRUE;
+	                Ignore_Deps[imtrx][var][eq] = TRUE;
+	               }
+                     else
+	               {
+	                Ignore_Deps[imtrx][eq][var] = TRUE;
+		       }
 	            }
-                  else
-	            {
-	              Ignore_Deps[eq][var] = TRUE;
-		    }
-	        }
-	    }
+	         }
+             }
 	}
       else
         {
-	
-          /* loop through equation names and compare to input */
-          for (var=0; var<MAX_VARIABLE_TYPES && !var_found; var++)
-	    {
-	      if ( !strcmp(input, Var_Name[var].name1) ||
-	           !strcmp(input, Var_Name[var].name2))
+	  for (imtrx = 0; imtrx < upd->Total_Num_Matrices; imtrx++)
+             {
+              /* loop through equation names and compare to input */
+              for (var=0; var<MAX_VARIABLE_TYPES && !var_found; var++)
+	         {
+	          if ( !strcmp(input, Var_Name[var].name1) ||
+	               !strcmp(input, Var_Name[var].name2))
+	            {
+	             var_found = TRUE;
+	            }
+	         } 
+              if (!var_found)
 	        {
-	          var_found = TRUE;
+	         EH(-1, "Could not identify variable type for Ignore Dependency");
 	        }
-	    } 
-          if (!var_found)
-	    {
-	      EH(-1, "Could not identify variable type for Ignore Dependency");
-	    }
-          var--; /* this got incremented one more time than desired */
+              var--; /* this got incremented one more time than desired */
       
-          if ( symmetric_flag )
-	    {
-	      Ignore_Deps[eq][var] = TRUE;
-	      Ignore_Deps[var][eq] = TRUE;
-	    }
-          else
-	    {
-	      Ignore_Deps[eq][var] = TRUE;
-	    }
-	}
+              if ( symmetric_flag )
+	        {
+	         Ignore_Deps[imtrx][eq][var] = TRUE;
+	         Ignore_Deps[imtrx][var][eq] = TRUE;
+	        }
+              else
+	        {
+	         Ignore_Deps[imtrx][eq][var] = TRUE;
+	        }
+             }
+        }
     }
   }
 
@@ -7601,6 +7609,8 @@ rd_matl_blk_specs(FILE *ifp,
 {
   char err_msg[MAX_CHAR_IN_INPUT];
   int	err, mn, i, imtrx;
+  int have_mesh_var; 
+  int have_por_liq_pres_var;
   FILE *imp;
   char MatFile[MAX_FNL];	/* Raw material database file. */
   char TmpMatFile[MAX_FNL];	/* Temporary copy of mat db after APREPRO. */
@@ -7732,19 +7742,37 @@ rd_matl_blk_specs(FILE *ifp,
    * for running decoupled code-to-code problem types.  The one type we are 
    * supporting right now are JAS-GOMA couples for poroelastic flow. 
    */
+
+  /* Check if it has a particular DOF in any matrix */
+
+      have_mesh_var = 0; 
+      have_por_liq_pres_var = 0;
+      for (imtrx = 0; imtrx < upd->Total_Num_Matrices; imtrx++)
+         {
+          if (pd_glob[0]->v[imtrx][MESH_DISPLACEMENT1])
+            {
+             have_mesh_var = 1;
+            }
+          if (pd_glob[0]->v[imtrx][POR_LIQ_PRES])
+            {
+             have_por_liq_pres_var = 1;
+            }
+         }
+
+
       efv->ev_porous_decouple = T_NOTHING;
       if(efv->ev)
 	{
 
 	  if ((strcmp(efv->name[0], "DMX") == 0 || strcmp(efv->name[0], "DISPLX") == 0) && 
 	      (strcmp(efv->name[1], "DMY") == 0  || strcmp(efv->name[1], "DISPLY") == 0) &&
-	      !pd_glob[0]->v[0][MESH_DISPLACEMENT1]       &&
-	      pd_glob[0]->v[0][POR_LIQ_PRES]                )
+	      (have_mesh_var == 0)       &&
+	      (have_por_liq_pres_var == 1 )               )
 	    {
 	      efv->ev_porous_decouple = T_SOMETHING;
 	    } 
-	  else if (!pd_glob[0]->v[0][MESH_DISPLACEMENT1]  &&
-		   pd_glob[0]->v[0][POR_LIQ_PRES]                )
+	  else if ( (have_mesh_var == 0)  &&
+		    (have_por_liq_pres_var == 1 )               )
 	    {
 	      EH(-1,"You have por_liq_press equation and efv's, but not the right order. Talk to PRS or RAR");
 	    }

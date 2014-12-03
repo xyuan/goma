@@ -125,7 +125,7 @@ write_brk_file(char* brkfile_name, Exo_DB *exo) {
     /* find interactions based on variables in use */
     for (row = 0; row < nbev; row++) {
       for (col = 0; col < nbev; col++) {
-        fprintf(brkfile, "%d ", Inter_Mask[var_in_use[row]][var_in_use[col]]);
+        fprintf(brkfile, "%d ", Inter_Mask[pg->imtrx][var_in_use[row]][var_in_use[col]]);
       }
       fprintf(brkfile, "\n");
     }

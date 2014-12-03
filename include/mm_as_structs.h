@@ -826,6 +826,19 @@ typedef struct Uniform_Problem_Description UPD_STRUCT;
 /*____________________________________________________________________________*/
 
 /*
+ * Problem_Graph Structure:
+ *
+ * Problem graph related structure containing information needed for segregated solver  
+ *
+ */
+struct Problem_Graph
+{
+  int   imtrx;                   /* Current active matrix index */
+};
+typedef struct Problem_Graph PROBLEM_GRAPH_STRUCT;
+/*____________________________________________________________________________*/
+
+/*
  * Problem_Description Structure:
  *
  * Values of equation and variable activity for the problem in the current

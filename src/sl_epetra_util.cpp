@@ -78,8 +78,8 @@ void EpetraCreateGomaProblemGraph(struct Aztec_Linear_Solver_System *ams, Exo_DB
   std::vector<int> Indices;
   std::vector<double> Values;
 
-  int NumMyRows = num_internal_dofs + num_boundary_dofs;
-  int NumExternal = num_external_dofs;
+  int NumMyRows = num_internal_dofs[pg->imtrx] + num_boundary_dofs[pg->imtrx];
+  int NumExternal = num_external_dofs[pg->imtrx];
   int NumMyCols = NumMyRows + NumExternal;
 
   /*
@@ -116,7 +116,7 @@ void EpetraCreateGomaProblemGraph(struct Aztec_Linear_Solver_System *ams, Exo_DB
    * loop over all of the nodes on this processor
    */
   for (inode = 0; inode < total_nodes; inode++) {
-    nv = Nodes[inode]->Nodal_Vars_Info;
+    nv = Nodes[inode]->Nodal_Vars_Info[pg->imtrx];
     /*
      * Fill the vector list which points to the unknowns defined at this
      * node...
@@ -150,7 +150,7 @@ void EpetraCreateGomaProblemGraph(struct Aztec_Linear_Solver_System *ams, Exo_DB
           j++) {
         inter_node = exo->node_node_list[j];
         nodeCol = Nodes[inter_node];
-        nvCol = nodeCol->Nodal_Vars_Info;
+        nvCol = nodeCol->Nodal_Vars_Info[pg->imtrx];
 
         /*
          * fill the vector list which points to the unknowns
@@ -184,7 +184,7 @@ void EpetraCreateGomaProblemGraph(struct Aztec_Linear_Solver_System *ams, Exo_DB
            * Query the Interaction mask to determine if a jacobian entry
            * should be created
            */
-          add_var = Inter_Mask[rowVarType][colVarType];
+          add_var = Inter_Mask[pg->imtrx][rowVarType][colVarType];
 
           /* The following code should be activated when solving DG viscoelastic problems
            * with full Jacobian treatment of upwind element stress terms
@@ -203,7 +203,7 @@ void EpetraCreateGomaProblemGraph(struct Aztec_Linear_Solver_System *ams, Exo_DB
                   && (rowVarType != PRESSURE)
                   && (rowVarType > VELOCITY_GRADIENT33
                       || rowVarType < VELOCITY_GRADIENT11)) {
-                add_var = Inter_Mask[rowVarType][colVarType];
+                add_var = Inter_Mask[pg->imtrx][rowVarType][colVarType];
               } else {
                 add_var = 0;
               }
@@ -217,7 +217,7 @@ void EpetraCreateGomaProblemGraph(struct Aztec_Linear_Solver_System *ams, Exo_DB
             /*
              * Determine the equation number of the current unknown
              */
-            icol_index = nodeCol->First_Unknown + inter_unknown;
+            icol_index = nodeCol->First_Unknown[pg->imtrx] + inter_unknown;
             Indices.push_back(ams->GlobalIDs[icol_index]);
             Values.push_back(0);
           }
@@ -242,12 +242,12 @@ void EpetraCreateGomaProblemGraph(struct Aztec_Linear_Solver_System *ams, Exo_DB
   ams->npn = dpi->num_internal_nodes + dpi->num_boundary_nodes;;
   ams->npn_plus = dpi->num_universe_nodes;
 
-  ams->npu = num_internal_dofs + num_boundary_dofs;
-  ams->npu_plus = num_universe_dofs;
+  ams->npu = num_internal_dofs[pg->imtrx] + num_boundary_dofs[pg->imtrx];
+  ams->npu_plus = num_universe_dofs[pg->imtrx];
 
   delete[] dblColGIDs;
 
-  DPRINTF(stderr, "\n%-30s= %d\n", "Number of unknowns", num_universe_dofs);
+  DPRINTF(stderr, "\n%-30s= %d\n", "Number of unknowns", num_universe_dofs[pg->imtrx]);
   DPRINTF(stderr, "\n%-30s= %d\n", "Number of matrix nonzeroes", nnz);
 }
 
@@ -294,13 +294,13 @@ void EpetraLoadLec(Exo_DB *exo, int ielem, struct Aztec_Linear_Solver_System *am
               nvdof = ei->Baby_Dolphin[e][i];
               je_new = ei->ieqn_ledof[ledof] + ke;
               row_index = Index_Solution(gnn, e, ke, nvdof,
-                  ei->matID_ledof[ledof]);
+					 ei->matID_ledof[ledof], pg->imtrx);
               resid_vector[row_index] += lec->R[MAX_PROB_VAR + ke][i];
 
               if (af->Assemble_Jacobian) {
                 for (v = V_FIRST; v < V_LAST; v++) {
                   pv = upd->vp[0][v];
-                  if (pv != -1 && (Inter_Mask[e][v])) {
+                  if (pv != -1 && (Inter_Mask[pg->imtrx][e][v])) {
                     ei_ptr = ei;
                     if (ei->owningElementForColVar[v] != ielem) {
                       if (ei->owningElementForColVar[v] != -1) {
@@ -319,7 +319,7 @@ void EpetraLoadLec(Exo_DB *exo, int ielem, struct Aztec_Linear_Solver_System *am
                           je_new = ei_ptr->ieqn_ledof[ledof] + kv;
                           col_index = Index_Solution(ei_ptr->gnn_list[v][j], v,
                               kv, ei_ptr->Baby_Dolphin[v][j],
-                              ei_ptr->matID_ledof[ledof]);
+						     ei_ptr->matID_ledof[ledof],pg->imtrx);
                           EH(col_index, "Bad var index.");
                           Indices.push_back(ams->GlobalIDs[col_index]);
                           Values.push_back(lec->J[pe][pv][i][j]);
@@ -333,7 +333,7 @@ void EpetraLoadLec(Exo_DB *exo, int ielem, struct Aztec_Linear_Solver_System *am
                         je_new = ei_ptr->ieqn_ledof[ledof];
                         col_index = Index_Solution(ei_ptr->gnn_list[v][j], v,
                             kv, ei_ptr->Baby_Dolphin[v][j],
-                            ei_ptr->matID_ledof[ledof]);
+						   ei_ptr->matID_ledof[ledof],pg->imtrx);
                         if (col_index != je_new) {
                           fprintf(stderr,
                               "Oh fiddlesticks: je = %d, je_new = %d\n",
@@ -373,7 +373,7 @@ void EpetraLoadLec(Exo_DB *exo, int ielem, struct Aztec_Linear_Solver_System *am
             if (af->Assemble_Jacobian) {
               for (v = V_FIRST; v < V_LAST; v++) {
                 pv = upd->vp[0][v];
-                if (pv != -1 && (Inter_Mask[e][v])) {
+                if (pv != -1 && (Inter_Mask[pg->imtrx][e][v])) {
                   if (v == MASS_FRACTION) {
 
                     ei_ptr = ei;
@@ -394,7 +394,7 @@ void EpetraLoadLec(Exo_DB *exo, int ielem, struct Aztec_Linear_Solver_System *am
                         je_new = ei_ptr->ieqn_ledof[ledof] + kv;
                         col_index = Index_Solution(ei_ptr->gnn_list[v][j], v,
                             kv, ei_ptr->Baby_Dolphin[v][j],
-                            ei_ptr->matID_ledof[ledof]);
+						   ei_ptr->matID_ledof[ledof],pg->imtrx);
                         if (col_index != je_new) {
                           /*
                            * HKM -> another special case. Until we delineate
@@ -428,7 +428,7 @@ void EpetraLoadLec(Exo_DB *exo, int ielem, struct Aztec_Linear_Solver_System *am
                       je_new = ei_ptr->ieqn_ledof[ledof];
                       col_index = Index_Solution(ei_ptr->gnn_list[v][j], v, kv,
                           ei_ptr->Baby_Dolphin[v][j],
-                          ei_ptr->matID_ledof[ledof]);
+						 ei_ptr->matID_ledof[ledof],pg->imtrx);
                       if (col_index != je_new) {
                         fprintf(stderr,
                             "Oh fiddlesticks: je = %d, je_new = %d\n",
