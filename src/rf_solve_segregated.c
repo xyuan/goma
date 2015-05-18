@@ -374,7 +374,6 @@ solve_problem_segregated(Exo_DB *exo,	 /* ptr to the finite element mesh databas
          ams[imtrx]->nnz = ija[imtrx][num_internal_dofs[imtrx] + num_boundary_dofs[imtrx]] - 1;
          ams[imtrx]->nnz_plus = ija[imtrx][num_universe_dofs[imtrx]];
 
-         ams[imtrx]->EpetraMat = NULL;
         } 
     }
 
@@ -445,18 +444,6 @@ solve_problem_segregated(Exo_DB *exo,	 /* ptr to the finite element mesh databas
 
          log_msg("sl_init()...");
          sl_init(matrix_systems_mask, ams, exo, dpi, cx, imtrx);
-
-         /*
-          * if we are using AMESOS we need to allocated and construct a C++ sparse Epetra_CrsMatrix object
-          * based upon the msr matrix.
-          *
-          * The next call returns a void * to this object
-          */
-#ifdef ENABLE_AMESOS
-         if ( Linear_Solver == AMESOS )
-             ams[imtrx]->EpetraMat = (void *) construct_Epetra_CrsMatrix( ams[imtrx] );
-#endif
-
 
 #ifdef PARALLEL
          /*
