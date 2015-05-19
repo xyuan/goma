@@ -1292,6 +1292,7 @@ EH(-1,"version not compiled with frontal solver");
 	  else
 	      Factor_Flag = 3;
 
+	  first_linear_solver_call = TRUE;
 	  if (first_linear_solver_call)
 	  {
 	    Factor_Flag = 0;
@@ -1303,7 +1304,7 @@ EH(-1,"version not compiled with frontal solver");
 	    Factor_Flag = 0;
 	  }
 	  matr_form = 1;
-
+	  
 	  UMF_system_id = SL_UMF(UMF_system_id,
 				 &first_linear_solver_call,
 				 &Factor_Flag, &matr_form,
