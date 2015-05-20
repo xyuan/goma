@@ -1458,7 +1458,7 @@ EH(-1,"version not compiled with frontal solver");
       case AMESOS:
 
         if( strcmp( Matrix_Format,"msr" ) == 0 ) {
-          amesos_solve_msr( Amesos_Package, ams, delta_x, resid_vector, 1 );
+          amesos_solve_msr( Amesos_Package, ams, delta_x, resid_vector, 1 , pg->imtrx);
         } else if ( strcmp( Matrix_Format,"epetra" ) == 0 ) {
           amesos_solve_epetra(Amesos_Package, ams, delta_x, resid_vector);
         } else {
@@ -1566,7 +1566,7 @@ EH(-1,"version not compiled with frontal solver");
 		  
 	  case AMESOS: 
             if( strcmp( Matrix_Format,"msr" ) == 0 ) {
-              amesos_solve_msr( Amesos_Package, ams, &wAC[iAC][0], &bAC[iAC][0], 0 );
+              amesos_solve_msr( Amesos_Package, ams, &wAC[iAC][0], &bAC[iAC][0], 0, pg->imtrx);
             } else if ( strcmp( Matrix_Format,"epetra" ) == 0 ) {
               amesos_solve_epetra(Amesos_Package, ams, &wAC[iAC][0], &bAC[iAC][0]);
             } else {
@@ -3616,7 +3616,7 @@ soln_sens ( double lambda,  /*  parameter */
 		
     case AMESOS:	
       if( strcmp( Matrix_Format,"msr" ) == 0 ) {
-        amesos_solve_msr( Amesos_Package, ams, x_sens, resid_vector_sens, 0 );
+        amesos_solve_msr( Amesos_Package, ams, x_sens, resid_vector_sens, 0, pg->imtrx);
       } else if ( strcmp( Matrix_Format,"epetra" ) == 0 ) {
         amesos_solve_epetra(Amesos_Package, ams, x_sens, resid_vector_sens);
       } else {

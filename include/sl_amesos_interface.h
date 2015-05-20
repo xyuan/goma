@@ -34,6 +34,7 @@ amesos_solve_msr ( char *,
 		   struct Aztec_Linear_Solver_System *,
 		   double *,
 		   double *,
+		   int ,
 		   int );
 EXTERN int
 amesos_solve_epetra( char *choice,
