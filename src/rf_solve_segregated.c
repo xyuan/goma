@@ -436,11 +436,10 @@ solve_problem_segregated(Exo_DB *exo,	 /* ptr to the finite element mesh databas
 
      for (imtrx = 0; imtrx < upd->Total_Num_Matrices; imtrx++)
         {
-	  
-         find_and_set_Dirichlet(x[imtrx], xdot[imtrx], exo, dpi);
-	 
          pg->imtrx = imtrx;
 
+         find_and_set_Dirichlet(x[imtrx], xdot[imtrx], exo, dpi);
+	 
          matrix_systems_mask = 1;
 
          log_msg("sl_init()...");
