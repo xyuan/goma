@@ -27,6 +27,9 @@
 #include "sl_amesos_interface.h"
 #include "brk_utils.h"
 
+#include "sl_epetra_interface.h"
+#include "sl_epetra_util.h"
+
 #define _RF_SOLVE_SEGREGATED_C
 #include "goma.h"
 #include "el_quality.h"
@@ -329,8 +332,17 @@ solve_problem_segregated(Exo_DB *exo,	 /* ptr to the finite element mesh databas
   a         = malloc(upd->Total_Num_Matrices * sizeof(double *));
   a_old     = malloc(upd->Total_Num_Matrices * sizeof(double *));
   
-  if ( strcmp( Matrix_Format, "msr" ) == 0) 
-    {
+  if (strcmp(Matrix_Format, "epetra") == 0) {
+    err = check_compatible_solver();
+    EH(err, "Incompatible matrix solver for epetra, epetra supports amesos and aztecoo solvers.");
+    check_parallel_error("Matrix format / Solver incompatibility");
+    for (imtrx = 0; imtrx < upd->Total_Num_Matrices; imtrx++) {
+      pg->imtrx = imtrx;
+      ams[pg->imtrx]->RowMatrix = EpetraCreateRowMatrix(num_internal_dofs[pg->imtrx] + num_boundary_dofs[pg->imtrx]);
+      EpetraCreateGomaProblemGraph(ams[pg->imtrx], exo, dpi);
+    }
+  } else if (strcmp(Matrix_Format, "msr") == 0) {
+      
      log_msg("alloc_MSR_sparse_arrays...");
      for (imtrx = 0; imtrx < upd->Total_Num_Matrices; imtrx++)
         {

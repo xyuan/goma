@@ -39,8 +39,9 @@ amesos_solve_msr ( char *,
 EXTERN int
 amesos_solve_epetra( char *choice,
                      struct Aztec_Linear_Solver_System *ams,
-                  double *x_,
-                  double *resid_vector);
+		     double *x_,
+		     double *resid_vector,
+		     int imtrx );
 
 EXTERN void
 trilinos_solve_ls (double *,

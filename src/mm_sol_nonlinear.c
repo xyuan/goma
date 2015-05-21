@@ -1460,7 +1460,7 @@ EH(-1,"version not compiled with frontal solver");
         if( strcmp( Matrix_Format,"msr" ) == 0 ) {
           amesos_solve_msr( Amesos_Package, ams, delta_x, resid_vector, 1 , pg->imtrx);
         } else if ( strcmp( Matrix_Format,"epetra" ) == 0 ) {
-          amesos_solve_epetra(Amesos_Package, ams, delta_x, resid_vector);
+          amesos_solve_epetra(Amesos_Package, ams, delta_x, resid_vector, pg->imtrx);
         } else {
           EH(-1," Sorry, only MSR and Epetra matrix formats are currently supported with the Amesos solver suite\n");
         }
@@ -1568,7 +1568,7 @@ EH(-1,"version not compiled with frontal solver");
             if( strcmp( Matrix_Format,"msr" ) == 0 ) {
               amesos_solve_msr( Amesos_Package, ams, &wAC[iAC][0], &bAC[iAC][0], 0, pg->imtrx);
             } else if ( strcmp( Matrix_Format,"epetra" ) == 0 ) {
-              amesos_solve_epetra(Amesos_Package, ams, &wAC[iAC][0], &bAC[iAC][0]);
+              amesos_solve_epetra(Amesos_Package, ams, &wAC[iAC][0], &bAC[iAC][0], pg->imtrx);
             } else {
               EH(-1," Sorry, only MSR and Epetra matrix formats are currently supported with the Amesos solver suite\n");
             }
@@ -3618,7 +3618,7 @@ soln_sens ( double lambda,  /*  parameter */
       if( strcmp( Matrix_Format,"msr" ) == 0 ) {
         amesos_solve_msr( Amesos_Package, ams, x_sens, resid_vector_sens, 0, pg->imtrx);
       } else if ( strcmp( Matrix_Format,"epetra" ) == 0 ) {
-        amesos_solve_epetra(Amesos_Package, ams, x_sens, resid_vector_sens);
+        amesos_solve_epetra(Amesos_Package, ams, x_sens, resid_vector_sens, pg->imtrx);
       } else {
         EH(-1," Sorry, only MSR and Epetra matrix formats are currently supported with the Amesos solver suite\n");
       }
