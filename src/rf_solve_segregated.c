@@ -104,18 +104,16 @@ void solve_problem_segregated(Exo_DB *exo, /* ptr to the finite element mesh dat
    */
 
   int error, err, is_steady_state;
-  int *gindex = NULL, gsize;
-  int *p_gsize;
-  static double *gvec = NULL;
-  static double ***gvec_elem = NULL;
-  static struct Results_Description *rd;
+  static double **gvec = NULL;
+  static double ****gvec_elem = NULL;
+  static struct Results_Description **rd;
 
   double *gv; /* Global variable values for ExoII database */
-  int tnv; /* total number of nodal variables and kinds */
-  int tev; /* total number of elem variables and kinds  */
-  int tnv_post; /* total number of nodal variables and kinds
+  int *tnv; /* total number of nodal variables and kinds */
+  int *tev; /* total number of elem variables and kinds  */
+  int *tnv_post; /* total number of nodal variables and kinds
    for post processing                       */
-  int tev_post; /* total number of elem variables and kinds
+  int *tev_post; /* total number of elem variables and kinds
    for post processing                       */
 
   unsigned int matrix_systems_mask;
@@ -127,30 +125,18 @@ void solve_problem_segregated(Exo_DB *exo, /* ptr to the finite element mesh dat
 
   static const char yo[] = "solve_problem_segregated"; /* So my name is in a string.        */
 
+  tnv = malloc(sizeof(int) * upd->Total_Num_Matrices);
+  tev = malloc(sizeof(int) * upd->Total_Num_Matrices);
+  tnv_post = malloc(sizeof(int) * upd->Total_Num_Matrices);
+  tev_post = malloc(sizeof(int) * upd->Total_Num_Matrices);
+
   /*
    *            BEGIN EXECUTION
    */
 
   is_steady_state = (TimeIntegration == STEADY) ? TRUE : FALSE;
 
-  p_gsize = &gsize;
 
-  /*
-   * Some preliminaries to help setup EXODUS II database output.
-   */
-
-  tnv = cnt_nodal_vars(); /*  tnv_post is calculated in load_nodal_tkn*/
-  tev = cnt_elem_vars(); /*  tev_post is calculated in load_elem_tkn*/
-
-  if (tnv < 0) {
-    DPRINTF(stderr, "%s:\tbad tnv.\n", yo);
-    EH(-1, "\t");
-  }
-
-  if (tev < 0) {
-    DPRINTF(stderr, "%s:\tMaybe bad tev? See goma design committee ;) \n", yo);
-    EH(-1, "\t");
-  }
 
   /*
    *  Malloc the space for the results description structure and set all
@@ -158,58 +144,83 @@ void solve_problem_segregated(Exo_DB *exo, /* ptr to the finite element mesh dat
    *  Do this only once if in library mode.
    */
   if (callnum == 1) {
-    rd = alloc_struct_1(struct Results_Description, 1);
+    rd = malloc(sizeof(struct Results_Description *) * upd->Total_Num_Matrices);
+    for (pg->imtrx = 0; pg->imtrx < upd->Total_Num_Matrices; pg->imtrx++) {
+      rd[pg->imtrx] = alloc_struct_1(struct Results_Description, 1);
+    }
   }
 
-  rd->nev = 0; /* number element variables in results */
-  rd->ngv = 0; /* number global variables in results  */
-  rd->nhv = 0; /* number history variables in results */
+  for (pg->imtrx = 0; pg->imtrx < upd->Total_Num_Matrices; pg->imtrx++) {
+    /*
+     * Some preliminaries to help setup EXODUS II database output.
+     */
 
-  rd->ngv = 5; /* number global variables in results
-   * see load_global_var_info for names
-   */
+    tnv[pg->imtrx] = cnt_nodal_vars(); /*  tnv_post is calculated in load_nodal_tkn*/
+    tev[pg->imtrx] = cnt_elem_vars(); /*  tev_post is calculated in load_elem_tkn*/
 
-  error = load_global_var_info(rd, 0, "CONV");
-  error = load_global_var_info(rd, 1, "NEWT_IT");
-  error = load_global_var_info(rd, 2, "MAX_IT");
-  error = load_global_var_info(rd, 3, "CONVRATE");
-  error = load_global_var_info(rd, 4, "MESH_VOLUME");
+    if (tnv[pg->imtrx] < 0) {
+      DPRINTF(stderr, "%s:\tbad tnv.\n", yo);
+      EH(-1, "\t");
+    }
 
-  gv = alloc_dbl_1(rd->ngv, 0.0);
+    if (tev[pg->imtrx] < 0) {
+      DPRINTF(stderr, "%s:\tMaybe bad tev? See goma design committee ;) \n", yo);
+      EH(-1, "\t");
+    }
 
-  /*
-   *  Load output nodal types, kinds and names into the structure
-   *  which will be used to define what's in the output file.
-   */
-  error = load_nodal_tkn(rd, &tnv, &tnv_post);
-  if (error != 0) {
-    DPRINTF(stderr, "%s:  problem with load_nodal_tkn()\n", yo);
-    EH(-1, "\t");
-  }
+    rd[pg->imtrx]->nev = 0; /* number element variables in results */
+    rd[pg->imtrx]->ngv = 0; /* number global variables in results  */
+    rd[pg->imtrx]->nhv = 0; /* number history variables in results */
 
-  /*
-   *  Load output element var types, kinds and names into the structure
-   *  which will be used to define what's in the output file.
-   */
-  error = load_elem_tkn(rd, exo, tev, &tev_post);
-  if (error != 0) {
-    DPRINTF(stderr, "%s:  problem with load_elem_tkn()\n", yo);
-    EH(-1, "\t");
-  }
+    rd[pg->imtrx]->ngv = 5; /* number global variables in results
+     * see load_global_var_info for names
+     */
 
-  /*
-   * Write out the names of the nodal variables that we will be sending to
-   * the EXODUS II output file later - do only once if in library mode.
-   */
+    error = load_global_var_info(rd[pg->imtrx], 0, "CONV");
+    error = load_global_var_info(rd[pg->imtrx], 1, "NEWT_IT");
+    error = load_global_var_info(rd[pg->imtrx], 2, "MAX_IT");
+    error = load_global_var_info(rd[pg->imtrx], 3, "CONVRATE");
+    error = load_global_var_info(rd[pg->imtrx], 4, "MESH_VOLUME");
 
-  if (callnum == 1) {
-    gvec_elem = (double ***) alloc_ptr_1(exo->num_elem_blocks);
-    if ((tev + tev_post) > 0) {
-      for (i = 0; i < exo->num_elem_blocks; i++) {
-        gvec_elem[i] = (double **) alloc_ptr_1(tev + tev_post);
+    gv = alloc_dbl_1(rd[pg->imtrx]->ngv, 0.0);
+
+    /*
+     *  Load output nodal types, kinds and names into the structure
+     *  which will be used to define what's in the output file.
+     */
+    error = load_nodal_tkn(rd[pg->imtrx], &tnv[pg->imtrx], &tnv_post[pg->imtrx]);
+    if (error != 0) {
+      DPRINTF(stderr, "%s:  problem with load_nodal_tkn()\n", yo);
+      EH(-1, "\t");
+    }
+
+    /*
+     *  Load output element var types, kinds and names into the structure
+     *  which will be used to define what's in the output file.
+     */
+    error = load_elem_tkn(rd[pg->imtrx], exo, tev[pg->imtrx], &tev_post[pg->imtrx]);
+    if (error != 0) {
+      DPRINTF(stderr, "%s:  problem with load_elem_tkn()\n", yo);
+      EH(-1, "\t");
+    }
+
+    /*
+     * Write out the names of the nodal variables that we will be sending to
+     * the EXODUS II output file later - do only once if in library mode.
+     */
+
+    if (callnum == 1) {
+      gvec_elem = (double ***) alloc_ptr_1(exo->num_elem_blocks);
+      if ((tev[pg->imtrx] + tev_post[pg->imtrx]) > 0) {
+        for (i = 0; i < exo->num_elem_blocks; i++) {
+          gvec_elem[i] = (double **) alloc_ptr_1(tev[pg->imtrx] + tev_post[pg->imtrx]);
+        }
       }
     }
-    wr_result_prelim_exo(rd, exo, ExoFileOut, gvec_elem);
+  }
+
+  if (callnum == 1) {
+    wr_result_prelim_exo_segregated(rd, exo, ExoFileOut, gvec_elem);
   }
 
   /*
@@ -219,7 +230,10 @@ void solve_problem_segregated(Exo_DB *exo, /* ptr to the finite element mesh dat
    * the exodus database.
    */
 
-  asdv(&gvec, Num_Node);
+  gvec = malloc(sizeof(double *) * upd->Total_Num_Matrices);
+  for (pg->imtrx = 0; pg->imtrx < upd->Total_Num_Matrices; pg->imtrx++) {
+    asdv(&gvec[pg->imtrx], Num_Node);
+  }
 
   /*
    * Allocate space and manipulate for all the nodes that this processor
@@ -302,8 +316,8 @@ void solve_problem_segregated(Exo_DB *exo, /* ptr to the finite element mesh dat
     }
   } else if (strcmp(Matrix_Format, "msr") == 0) {
 
-    log_msg("alloc_MSR_sparse_arrays...")
-;    for (pg->imtrx = 0; pg->imtrx < upd->Total_Num_Matrices; pg->imtrx++) {
+    log_msg("alloc_MSR_sparse_arrays...");
+    for (pg->imtrx = 0; pg->imtrx < upd->Total_Num_Matrices; pg->imtrx++) {
       alloc_MSR_sparse_arrays(&(ija[pg->imtrx]), &(a[pg->imtrx]), &(a_old[pg->imtrx]), 0,
           node_to_fill, exo, dpi);
 
@@ -347,38 +361,6 @@ void solve_problem_segregated(Exo_DB *exo, /* ptr to the finite element mesh dat
       ams[pg->imtrx]->nnz_plus = ija[pg->imtrx][num_universe_dofs[pg->imtrx]];
 
     }
-  }
-
-  else if (strcmp(Matrix_Format, "vbr") == 0) {
-
-    log_msg("alloc_VBR_sparse_arrays...")
-;
-    for (pg->imtrx = 0; pg->imtrx < upd->Total_Num_Matrices; pg->imtrx++) {
-
-      alloc_VBR_sparse_arrays(ams[pg->imtrx], exo, dpi);
-      ija_attic[pg->imtrx] = NULL;
-      ams[pg->imtrx]->belfry = ija_attic[pg->imtrx];
-
-      a[pg->imtrx] = ams[pg->imtrx]->val;
-
-      if (!save_old_A)
-        a_old[pg->imtrx] = ams[pg->imtrx]->val_old = NULL;
-
-    }
-  }
-
-  else if (strcmp(Matrix_Format, "front") == 0) {
-    for (pg->imtrx = 0; pg->imtrx < upd->Total_Num_Matrices; pg->imtrx++) {
-      /* Don't allocate any sparse matrix space when using front */
-      ams[pg->imtrx]->bindx = NULL;
-      ams[pg->imtrx]->val = NULL;
-      ams[pg->imtrx]->belfry = NULL;
-      ams[pg->imtrx]->val_old = NULL;
-      ams[pg->imtrx]->indx = NULL;
-      ams[pg->imtrx]->bpntr = NULL;
-      ams[pg->imtrx]->rpntr = NULL;
-      ams[pg->imtrx]->cpntr = NULL;
-    }
   } else {
     EH(-1, "Attempted to allocate unknown sparse matrix format");
   }
@@ -401,8 +383,8 @@ void solve_problem_segregated(Exo_DB *exo, /* ptr to the finite element mesh dat
 
       matrix_systems_mask = 1;
 
-      log_msg("sl_init()...")
-;      sl_init(matrix_systems_mask, ams, exo, dpi, cx);
+      log_msg("sl_init()...");
+      sl_init(matrix_systems_mask, ams, exo, dpi, cx);
 
 #ifdef PARALLEL
       /*
@@ -411,14 +393,21 @@ void solve_problem_segregated(Exo_DB *exo, /* ptr to the finite element mesh dat
       check_parallel_error("Solver initialization problems");
 #endif /* PARALLEL */
 
-      err = solve_nonlinear_problem(ams[pg->imtrx], x[pg->imtrx], delta_t, theta,
-          x_old[pg->imtrx], x_older[pg->imtrx], xdot[pg->imtrx], xdot_old[pg->imtrx],
-          resid_vector[pg->imtrx], x_update[pg->imtrx], scale[pg->imtrx], &converged,
-          &nprint, tev, tev_post, gv, rd, gindex, p_gsize, gvec, gvec_elem,
-          time1, exo, dpi, cx, 0, &time_step_reform, is_steady_state,
+      err = solve_nonlinear_problem(ams[pg->imtrx], x[pg->imtrx], delta_t,
+          theta, x_old[pg->imtrx], x_older[pg->imtrx], xdot[pg->imtrx],
+          xdot_old[pg->imtrx], resid_vector[pg->imtrx], x_update[pg->imtrx],
+          scale[pg->imtrx], &converged, &nprint, tev[pg->imtrx],
+          tev_post[pg->imtrx], gv, rd[pg->imtrx], NULL, NULL, gvec[pg->imtrx],
+          gvec_elem, time1, exo, dpi, cx, 0, &time_step_reform, is_steady_state,
           NULL, NULL, time1, NULL,
           NULL, NULL, NULL);
 
     }
+
+    write_solution_segregated(ExoFileOut, resid_vector, x,
+                         x_old, xdot, xdot_old, tev, tev_post, gv,
+                         rd, gvec, gvec_elem,
+                         &nprint, delta_t, theta, time1, NULL,
+                         exo, dpi);
   }
 }
