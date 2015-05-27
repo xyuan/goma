@@ -7780,10 +7780,6 @@ load_nodal_tkn (struct Results_Description *rd, int *tnv, int *tnv_post)
 	    }     
        }
      }
-  else
-    {
-      STREAM = -1;
-    }
 
    if (STREAM_NORMAL_STRESS != -1 && Num_Var_In_Type[pg->imtrx][R_MOMENTUM1])
      {
@@ -7797,10 +7793,6 @@ load_nodal_tkn (struct Results_Description *rd, int *tnv, int *tnv_post)
          }
        STREAM_NORMAL_STRESS = index_post;
        index_post++;
-    }
-  else
-    {
-      STREAM_NORMAL_STRESS = -1;
     }
 
    if (DIV_VELOCITY != -1 && Num_Var_In_Type[pg->imtrx][PRESSURE])
@@ -7816,10 +7808,6 @@ load_nodal_tkn (struct Results_Description *rd, int *tnv, int *tnv_post)
        DIV_VELOCITY = index_post;
        index_post++;
      }
-   else
-     {
-       DIV_VELOCITY = -1;
-     }
 
    if (DIV_PVELOCITY != -1 && Num_Var_In_Type[pg->imtrx][R_PMOMENTUM1])
      {
@@ -7834,10 +7822,6 @@ load_nodal_tkn (struct Results_Description *rd, int *tnv, int *tnv_post)
        DIV_PVELOCITY = index_post;
        index_post++;
      }
-   else
-     {
-       DIV_PVELOCITY = -1;
-     }
 
    if (DIV_TOTAL != -1 && Num_Var_In_Type[pg->imtrx][R_PMOMENTUM1])
      {
@@ -7851,10 +7835,6 @@ load_nodal_tkn (struct Results_Description *rd, int *tnv, int *tnv_post)
          }
        DIV_TOTAL = index_post;
        index_post++;
-     }
-   else
-     {
-       DIV_TOTAL = -1;
      }
 
    if (PP_Viscosity != -1 && (
@@ -7873,10 +7853,6 @@ load_nodal_tkn (struct Results_Description *rd, int *tnv, int *tnv_post)
        PP_Viscosity = index_post;
        index_post++;
      }
-   else
-     {
-       PP_Viscosity = -1;
-     }
 
   if (PP_VolumeFractionGas != -1 && Num_Var_In_Type[pg->imtrx][R_MOMENTUM1])
      {
@@ -7890,11 +7866,6 @@ load_nodal_tkn (struct Results_Description *rd, int *tnv, int *tnv_post)
        PP_VolumeFractionGas = index_post;
        index_post++;
      }
-   else
-     {
-       PP_VolumeFractionGas = -1;
-     }
-
 
    if (DENSITY != -1 && Num_Var_In_Type[pg->imtrx][R_MOMENTUM1])
      {
@@ -7907,10 +7878,6 @@ load_nodal_tkn (struct Results_Description *rd, int *tnv, int *tnv_post)
          }
        DENSITY = index_post;
        index_post++;
-     }
-   else
-     {
-       DENSITY= -1;
      }
 
    if (MEAN_SHEAR != -1 && Num_Var_In_Type[pg->imtrx][R_MOMENTUM1])
@@ -7925,10 +7892,6 @@ load_nodal_tkn (struct Results_Description *rd, int *tnv, int *tnv_post)
          }
        MEAN_SHEAR = index_post;
        index_post++;
-    }
-  else
-    {
-      MEAN_SHEAR = -1;
     }
 
    check = 0;
@@ -7950,10 +7913,6 @@ load_nodal_tkn (struct Results_Description *rd, int *tnv, int *tnv_post)
        PRESSURE_CONT = index_post;
        index_post++;
     }
-  else
-    {
-      PRESSURE_CONT = -1;
-    }
 
    if (SH_DIV_S_V_CONT != -1 && (Num_Var_In_Type[pg->imtrx][R_MOMENTUM1]))
      {
@@ -7968,11 +7927,6 @@ load_nodal_tkn (struct Results_Description *rd, int *tnv, int *tnv_post)
        SH_DIV_S_V_CONT = index_post;
        index_post++;
     }
-  else
-    {
-      SH_DIV_S_V_CONT= -1;
-    }
-
 
    if (SH_CURV_CONT != -1 && (Num_Var_In_Type[pg->imtrx][R_SHELL_SURF_CURV]))
      {
@@ -7985,10 +7939,6 @@ load_nodal_tkn (struct Results_Description *rd, int *tnv, int *tnv_post)
          }
        SH_CURV_CONT = index_post;
        index_post++;
-    }
-  else
-    {
-      SH_CURV_CONT= -1;
     }
  
   if (FILL_CONT != -1 && (Num_Var_In_Type[pg->imtrx][R_FILL]  ))
@@ -8004,10 +7954,6 @@ load_nodal_tkn (struct Results_Description *rd, int *tnv, int *tnv_post)
        FILL_CONT = index_post;
        index_post++;
      }
-  else
-    {
-      FILL_CONT = -1;
-    }
 
   if (CONC_CONT != -1 && (Num_Var_In_Type[pg->imtrx][R_MASS]  ))
      {
@@ -8026,10 +7972,6 @@ load_nodal_tkn (struct Results_Description *rd, int *tnv, int *tnv_post)
 	  index_post++;
 	}
      }
-  else
-    {
-      CONC_CONT = -1;
-    }
 
   if (STRESS_CONT != -1 && (Num_Var_In_Type[pg->imtrx][POLYMER_STRESS11]  ))
     {
@@ -8099,10 +8041,6 @@ load_nodal_tkn (struct Results_Description *rd, int *tnv, int *tnv_post)
 	    }
 	}
      }
-  else
-    {
-      STRESS_CONT = -1;
-    }
 
    if (FIRST_INVAR_STRAIN != -1 && Num_Var_In_Type[pg->imtrx][R_MESH1])
      {
@@ -8116,10 +8054,6 @@ load_nodal_tkn (struct Results_Description *rd, int *tnv, int *tnv_post)
         }
       FIRST_INVAR_STRAIN = index_post;
       index_post++;
-    }
-  else
-    {
-      FIRST_INVAR_STRAIN = -1;
     }
 
    if (SEC_INVAR_STRAIN != -1 && Num_Var_In_Type[pg->imtrx][R_MESH1])
@@ -8135,10 +8069,6 @@ load_nodal_tkn (struct Results_Description *rd, int *tnv, int *tnv_post)
       SEC_INVAR_STRAIN = index_post;
       index_post++;
     }
-  else
-    {
-      SEC_INVAR_STRAIN = -1;
-    }
 
    if (THIRD_INVAR_STRAIN != -1 && Num_Var_In_Type[pg->imtrx][R_MESH1])
      {
@@ -8153,11 +8083,6 @@ load_nodal_tkn (struct Results_Description *rd, int *tnv, int *tnv_post)
       THIRD_INVAR_STRAIN = index_post;
       index_post++;
     }
-  else
-    {
-      THIRD_INVAR_STRAIN = -1;
-    }
-
 
    if(DIELECTROPHORETIC_FIELD != -1 && Num_Var_In_Type[pg->imtrx][R_POTENTIAL])
      { 
@@ -8180,8 +8105,6 @@ load_nodal_tkn (struct Results_Description *rd, int *tnv, int *tnv_post)
 	   index_post++;
 	 }
      }
-   else
-     DIELECTROPHORETIC_FIELD = -1;
 
    if(DIELECTROPHORETIC_FIELD_NORM != -1 && Num_Var_In_Type[pg->imtrx][R_POTENTIAL])
      {
@@ -8195,8 +8118,6 @@ load_nodal_tkn (struct Results_Description *rd, int *tnv, int *tnv_post)
        DIELECTROPHORETIC_FIELD_NORM = index_post;
        index_post++;
      }
-   else
-     DIELECTROPHORETIC_FIELD_NORM = -1;
 
    if(ENORMSQ_FIELD != -1 && Num_Var_In_Type[pg->imtrx][R_POTENTIAL] && Num_Var_In_Type[pg->imtrx][R_ENORM])
      {
@@ -8219,8 +8140,6 @@ load_nodal_tkn (struct Results_Description *rd, int *tnv, int *tnv_post)
 	   index_post++;
 	 }
      }
-   else
-     ENORMSQ_FIELD = -1;
 
    if(ENORMSQ_FIELD_NORM != -1 && Num_Var_In_Type[pg->imtrx][R_POTENTIAL] && Num_Var_In_Type[pg->imtrx][R_ENORM])
      {
@@ -8234,8 +8153,6 @@ load_nodal_tkn (struct Results_Description *rd, int *tnv, int *tnv_post)
        ENORMSQ_FIELD_NORM = index_post;
        index_post++;
      }
-   else
-     ENORMSQ_FIELD_NORM = -1;
 
    if (DIFFUSION_VECTORS != -1) {
      if (DIFFUSION_VECTORS == 2)
@@ -8319,8 +8236,6 @@ load_nodal_tkn (struct Results_Description *rd, int *tnv, int *tnv_post)
 	 index_post++;
        }
      }
-   } else {
-     FLUXLINES = -1;
    }
 
   if (CONDUCTION_VECTORS != -1 && Num_Var_In_Type[pg->imtrx][R_ENERGY])
@@ -8338,10 +8253,6 @@ load_nodal_tkn (struct Results_Description *rd, int *tnv, int *tnv_post)
 	index++;
 	index_post++;
       }
-    }
-  else
-    {
-      CONDUCTION_VECTORS = -1;
     }
 
   if (ELECTRIC_FIELD != -1 && Num_Var_In_Type[pg->imtrx][R_POTENTIAL])
@@ -8374,10 +8285,6 @@ load_nodal_tkn (struct Results_Description *rd, int *tnv, int *tnv_post)
 	  index_post++;
 	}
     }
-  else
-    {
-      ELECTRIC_FIELD = -1;
-    }
 
   if (ELECTRIC_FIELD_MAG != -1 && Num_Var_In_Type[pg->imtrx][R_POTENTIAL])
     {
@@ -8393,10 +8300,6 @@ load_nodal_tkn (struct Results_Description *rd, int *tnv, int *tnv_post)
         }
       ELECTRIC_FIELD_MAG = index_post;
       index_post++;
-    }
-  else
-    {
-      ELECTRIC_FIELD_MAG = -1;
     }
 
   if (ENERGY_FLUXLINES != -1 && Num_Var_In_Type[pg->imtrx][R_ENERGY])
@@ -8420,10 +8323,6 @@ load_nodal_tkn (struct Results_Description *rd, int *tnv, int *tnv_post)
       index_post++;
     }
   }
-  else
-    {
-      ENERGY_FLUXLINES = -1;
-    }
 
 /* there are always 6 entries in the stress tensor (3-D symmetric) */
   if (STRESS_TENSOR != -1 && Num_Var_In_Type[pg->imtrx][R_MESH1])
@@ -8460,10 +8359,6 @@ load_nodal_tkn (struct Results_Description *rd, int *tnv, int *tnv_post)
 	  index++;
 	  index_post++;
 	}
-    }
-  else
-    {
-      STRESS_TENSOR = -1;
     }
 
 /* there are always 6 entries in the stress tensor (3-D symmetric) */
@@ -8502,10 +8397,6 @@ load_nodal_tkn (struct Results_Description *rd, int *tnv, int *tnv_post)
 	  index_post++;
 	}
     }
-  else
-    {
-      REAL_STRESS_TENSOR = -1;
-    }
 
   if (STRAIN_TENSOR != -1 &&  Num_Var_In_Type[pg->imtrx][R_MESH1])
     {
@@ -8541,10 +8432,6 @@ load_nodal_tkn (struct Results_Description *rd, int *tnv, int *tnv_post)
 	  index++;
 	  index_post++;
 	}
-    }
-  else
-    {
-      STRAIN_TENSOR = -1;
     }
 
   if (evpl_glob[0]->ConstitutiveEquation == EVP_HYPER &&
@@ -8640,10 +8527,6 @@ load_nodal_tkn (struct Results_Description *rd, int *tnv, int *tnv_post)
 	    }
 	}
     }
-  else
-    {
-      EVP_DEF_GRAD_TENSOR = -1;
-    }
 
   check = 0;
   for (i = 0; i < upd->Num_Mat; i++)
@@ -8667,10 +8550,6 @@ load_nodal_tkn (struct Results_Description *rd, int *tnv, int *tnv_post)
 	  index++;
 	  index_post++;
 	}
-    }
-  else
-    {
-      LAGRANGE_CONVECTION = -1;
     }
   						
   if (SURFACE_VECTORS != -1  && Num_Var_In_Type[pg->imtrx][MESH_DISPLACEMENT1])		
@@ -8712,10 +8591,6 @@ load_nodal_tkn (struct Results_Description *rd, int *tnv, int *tnv_post)
       index += Num_Dim * (Num_Dim - 1);
       index_post += Num_Dim * (Num_Dim - 1);
     }
-  else
-    {
-      SURFACE_VECTORS = -1;
-    }
     
   if (SHELL_NORMALS != -1  && ( Num_Var_In_Type[pg->imtrx][SHELL_ANGLE1] || Num_Var_In_Type[pg->imtrx][LUBP] ) )		
     {
@@ -8747,10 +8622,6 @@ load_nodal_tkn (struct Results_Description *rd, int *tnv, int *tnv_post)
 	  index_post++;
 	}
     }
-  else
-    {
-      SHELL_NORMALS = -1;
-    }
    
   /*
    * Porous flow post-processing setup section
@@ -8779,8 +8650,6 @@ index_post, index_post_export);
       }
     POROUS_SATURATION = index_post;
     index_post++;
-  } else {
-    POROUS_SATURATION = -1;
   } 
 
   if (POROUS_RHO_TOTAL_SOLVENTS != -1 && 
@@ -8810,8 +8679,6 @@ index_post, index_post_export);
       index++;
       index_post++;
     }
-  } else {
-    POROUS_RHO_TOTAL_SOLVENTS = -1;
   }
 
   if (POROUS_RHO_GAS_SOLVENTS != -1 &&
@@ -8845,8 +8712,6 @@ index_post, index_post_export);
       index++;
       index_post++;
     }
-  } else {
-    POROUS_RHO_GAS_SOLVENTS = -1; 
   }
 
   if (POROUS_RHO_LPHASE != -1 && 
@@ -8863,8 +8728,6 @@ index_post, index_post_export);
       }
     POROUS_RHO_LPHASE = index_post;
     index_post++;
-  } else {
-    POROUS_RHO_LPHASE = -1;
   }
 
   if (DARCY_VELOCITY_GAS != -1 &&
@@ -8881,8 +8744,6 @@ index_post, index_post_export);
       index++;
       index_post++;
     }
-  } else {
-    DARCY_VELOCITY_GAS = -1;
   }
 
   if (DARCY_VELOCITY_LIQ != -1 && 
@@ -8899,8 +8760,6 @@ index_post, index_post_export);
       index++;
       index_post++;
     }
-  } else {
-    DARCY_VELOCITY_LIQ = -1;
   }
   if (POROUS_LIQUID_ACCUM_RATE != -1 && 
       Num_Var_In_Type[pg->imtrx][R_POR_LIQ_PRES] && check) {
@@ -8914,8 +8773,6 @@ index_post, index_post_export);
       }
     POROUS_LIQUID_ACCUM_RATE = index_post;
     index_post++;
-  } else {
-    POROUS_LIQUID_ACCUM_RATE = -1;
   }
 
 /*
@@ -8934,8 +8791,6 @@ index_post, index_post_export);
       }
     CAPILLARY_PRESSURE = index_post;
     index_post++;
-  } else {
-    CAPILLARY_PRESSURE = -1;
   }
 
   if (POROUS_GRIDPECLET != -1 && 
@@ -8950,8 +8805,6 @@ index_post, index_post_export);
       }
     POROUS_GRIDPECLET = index_post;
     index_post++;
-  } else {
-    POROUS_GRIDPECLET = -1;
   }
 
   if (POROUS_SUPGVELOCITY != -1 && 
@@ -8968,8 +8821,6 @@ index_post, index_post_export);
       index++;
       index_post++;
     }
-  } else {
-    POROUS_SUPGVELOCITY = -1;
   }
 /*
 printf(" After porous entries, IP = %d and IPE = %d\n",
@@ -9022,10 +8873,6 @@ index_post, index_post_export);
 	   CURL_V = -1;
 	 }
      }
-  else
-    {
-      CURL_V = -1;
-    }
 
   if (USER_POST != -1)
     {
@@ -9039,10 +8886,6 @@ index_post, index_post_export);
         }
       USER_POST = index_post;
       index_post++;
-    }
-  else
-    {
-      USER_POST = -1;
     }
 
   if (ACOUSTIC_PRESSURE != -1  && 
@@ -9059,10 +8902,6 @@ index_post, index_post_export);
       ACOUSTIC_PRESSURE = index_post;
       index_post++;
     }
-  else
-    {
-      ACOUSTIC_PRESSURE = -1;
-    }
 
   if (ACOUSTIC_PHASE_ANGLE != -1  && 
       (Num_Var_In_Type[pg->imtrx][R_ACOUS_PREAL] && Num_Var_In_Type[pg->imtrx][R_ACOUS_PIMAG]) )
@@ -9077,10 +8916,6 @@ index_post, index_post_export);
         }
       ACOUSTIC_PHASE_ANGLE = index_post;
       index_post++;
-    }
-  else
-    {
-      ACOUSTIC_PHASE_ANGLE = -1;
     }
 
   if (ACOUSTIC_ENERGY_DENSITY != -1  && 
@@ -9097,10 +8932,6 @@ index_post, index_post_export);
       ACOUSTIC_ENERGY_DENSITY = index_post;
       index_post++;
     }
-  else
-    {
-      ACOUSTIC_ENERGY_DENSITY = -1;
-    }
 
   if (LIGHT_INTENSITY != -1  && 
       (Num_Var_In_Type[pg->imtrx][R_LIGHT_INTP] && Num_Var_In_Type[pg->imtrx][R_LIGHT_INTM]) )
@@ -9116,10 +8947,6 @@ index_post, index_post_export);
       LIGHT_INTENSITY = index_post;
       index_post++;
     }
-  else
-    {
-      LIGHT_INTENSITY = -1;
-    }
 
   if (UNTRACKED_SPEC != -1  && Num_Var_In_Type[pg->imtrx][R_MASS] )
     {
@@ -9133,10 +8960,6 @@ index_post, index_post_export);
         }
       UNTRACKED_SPEC = index_post;
       index_post++;
-    }
-  else
-    {
-      UNTRACKED_SPEC = -1;
     }
 
   if (PRINCIPAL_STRESS != -1  && Num_Var_In_Type[pg->imtrx][R_MESH1])
@@ -9166,10 +8989,6 @@ index_post, index_post_export);
       index++;
       index_post++;
     }
-  else
-    {
-      PRINCIPAL_STRESS = -1;
-    }
 
   if (PRINCIPAL_REAL_STRESS != -1  && Num_Var_In_Type[pg->imtrx][R_SOLID1])
     {
@@ -9198,10 +9017,6 @@ index_post, index_post_export);
       index++;
       index_post++;
     }
-  else
-    {
-      PRINCIPAL_REAL_STRESS = -1;
-    }
 
   if (LUB_HEIGHT != -1  && (Num_Var_In_Type[pg->imtrx][R_LUBP] || Num_Var_In_Type[pg->imtrx][R_SHELL_FILMP]) )
     {
@@ -9216,10 +9031,6 @@ index_post, index_post_export);
       index++;
       index_post++;
     }
-  else
-    {
-      LUB_HEIGHT = -1;
-    }
 
   if (LUB_HEIGHT_2 != -1  && (Num_Var_In_Type[pg->imtrx][R_LUBP_2] ))
     {
@@ -9233,10 +9044,6 @@ index_post, index_post_export);
       set_nv_tkud(rd, index, 0, 0, -2, nm, "[1]", ds, FALSE);
       index++;
       index_post++;
-    }
-  else
-    {
-      LUB_HEIGHT_2 = -1;
     }
 
   if (LUB_VELO_UPPER != -1  && Num_Var_In_Type[pg->imtrx][R_LUBP])
@@ -9262,10 +9069,6 @@ index_post, index_post_export);
       index++;
       index_post++;
     }
-  else
-    {
-      LUB_VELO_UPPER = -1;
-    }
 
   if (LUB_VELO_LOWER != -1  && Num_Var_In_Type[pg->imtrx][R_LUBP])
     {
@@ -9289,10 +9092,6 @@ index_post, index_post_export);
       set_nv_tkud(rd, index, 0, 0, -2, nm, "[1]", ds, FALSE);
       index++;
       index_post++;
-    }
-  else
-    {
-      LUB_VELO_LOWER = -1;
     }
 
   if (LUB_VELO_FIELD != -1  && (Num_Var_In_Type[pg->imtrx][R_LUBP] || Num_Var_In_Type[pg->imtrx][R_SHELL_FILMP]))
@@ -9318,10 +9117,6 @@ index_post, index_post_export);
       index++;
       index_post++;
     }
-  else
-    {
-      LUB_VELO_FIELD = -1;
-    }
 
   if (DISJ_PRESS != -1  && Num_Var_In_Type[pg->imtrx][R_SHELL_FILMP])
     {
@@ -9337,12 +9132,6 @@ index_post, index_post_export);
       index_post++;
     }
 
-  else
-    {
-      DISJ_PRESS = -1;
-    }
-
-
   if (SH_SAT_OPEN != -1  && Num_Var_In_Type[pg->imtrx][R_SHELL_SAT_OPEN])
     {
       if (SH_SAT_OPEN == 2)
@@ -9355,10 +9144,6 @@ index_post, index_post_export);
       set_nv_tkud(rd, index, 0, 0, -2, nm, "[1]", ds, FALSE);
       index++;
       index_post++;
-    }
-  else
-    {
-      SH_SAT_OPEN = -1;
     }
 
   if (SH_SAT_OPEN != -1  && Num_Var_In_Type[pg->imtrx][R_SHELL_SAT_OPEN_2])
@@ -9374,11 +9159,6 @@ index_post, index_post_export);
       index++;
       index_post++;
     }
-  else
-    {
-      SH_SAT_OPEN_2 = -1;
-    }
-
 
   if (PP_LAME_MU != -1  && Num_Var_In_Type[pg->imtrx][R_MESH1])
     {
@@ -9393,11 +9173,6 @@ index_post, index_post_export);
       index++;
       index_post++;
     }
-  else
-    {
-      PP_LAME_MU = -1;
-    }
-
 
   if (PP_LAME_LAMBDA != -1  && Num_Var_In_Type[pg->imtrx][R_MESH1])
     {
@@ -9411,10 +9186,6 @@ index_post, index_post_export);
       set_nv_tkud(rd, index, 0, 0, -2, nm, "[1]", ds, FALSE);
       index++;
       index_post++;
-    }
-  else
-    {
-      PP_LAME_LAMBDA = -1;
     }
 
   if (VON_MISES_STRAIN != -1 && Num_Var_In_Type[pg->imtrx][R_MESH1])
@@ -9430,10 +9201,6 @@ index_post, index_post_export);
       VON_MISES_STRAIN = index_post;
       index_post++;
     }
-  else
-    {
-      VON_MISES_STRAIN = -1;
-    }
 
   if (VON_MISES_STRESS != -1 && Num_Var_In_Type[pg->imtrx][R_MESH1])
     {
@@ -9447,10 +9214,6 @@ index_post, index_post_export);
         }
       VON_MISES_STRESS = index_post;
       index_post++;
-    }
-  else
-    {
-      VON_MISES_STRESS = -1;
     }
   
 /* Add external variables if they are present */
@@ -9469,10 +9232,6 @@ index_post, index_post_export);
 	  index++;
 	  index_post++;
 	}
-    }
-  else
-    {
-      EXTERNAL_POST = -1;
     }
 
 
@@ -9509,10 +9268,6 @@ index_post, index_post_export);
 	  index_post++;
 	}
      }
-  else
-    {
-      NS_RESIDUALS = -1;
-    }
 
   if ( MM_RESIDUALS != -1 && Num_Var_In_Type[pg->imtrx][R_MESH1])
      {
@@ -9535,10 +9290,6 @@ index_post, index_post_export);
 	index++;
 	index_post++;
        }
-    }
-  else
-    {
-      MM_RESIDUALS = -1;
     }
 
   /* write out total stress */
@@ -9575,10 +9326,6 @@ index_post, index_post_export);
 	      index++;
 	      index_post++;
 	    }
-	  else
-	    {
-	      TOTAL_STRESS12 = -1;
-	    }
 	    
 	  var = R_STRESS22;
 	  if ( Num_Var_In_Type[pg->imtrx][var])
@@ -9589,10 +9336,7 @@ index_post, index_post_export);
 	      index++;
 	      index_post++;
 	    }
-	  else
-	    {
-	      TOTAL_STRESS22 = -1;
-	    }
+
 	  var = R_STRESS13;
 	  if ( Num_Var_In_Type[pg->imtrx][var])
 	    {
@@ -9602,10 +9346,7 @@ index_post, index_post_export);
 	      index++;
 	      index_post++;
 	    }
-	  else
-	    {
-	      TOTAL_STRESS13 = -1;
-	    }
+
 	  var = R_STRESS23;
 	  if ( Num_Var_In_Type[pg->imtrx][var])
 	    {
@@ -9615,10 +9356,7 @@ index_post, index_post_export);
 	      index++;
 	      index_post++;
 	    }
-	  else
-	    {
-	      TOTAL_STRESS23 = -1;
-	    }
+
 	  var = R_STRESS33;
 	  if (Num_Var_In_Type[pg->imtrx][var])
 	    {
@@ -9628,15 +9366,8 @@ index_post, index_post_export);
 	      index++;
 	      index_post++;
 	    }
-	  else
-	    {
-	      TOTAL_STRESS33 = -1;
-	    }
+
 	}
-    }
-  else
-    {
-      TOTAL_STRESS11 = -1;
     }
 
   rd->TotalNVPostOutput = index - rd->TotalNVSolnOutput;
@@ -9708,8 +9439,6 @@ index_post, index_post_export);
         }
       }
     }
-  } else {
-    TIME_DERIVATIVES = -1;
   }
      
   /* end of setup of time derivatives  ****************************/
