@@ -89,7 +89,7 @@ write_solution(char output_file[], /* name EXODUS II file */
 
     post_process_nodal(x, x_sens_p, x_old, xdot, xdot_old, resid_vector, 
 		       step, &time_value, delta_t, theta, x_pp,
-		       exo, dpi, rd, output_file);
+		       exo, dpi, rd, output_file, 0);
 #ifdef DEBUG
     fprintf(stderr, "%s: done w/ post_process_nodal\n", yo);
 #endif
@@ -182,12 +182,14 @@ write_solution_segregated(char output_file[], /* name EXODUS II file */
   /* First nodal quantities */
   int offset = 0;
   for (pg->imtrx = 0; pg->imtrx < upd->Total_Num_Matrices; pg->imtrx++) {
+    if (pg->imtrx > 0) {
+      offset += rd[pg->imtrx -1]->TotalNVSolnOutput + rd[pg->imtrx -1]->TotalNVPostOutput;
+    }
     for (i = 0; i < rd[pg->imtrx]->TotalNVSolnOutput; i++) {
       extract_nodal_vec(x[pg->imtrx], rd[pg->imtrx]->nvtype[i], rd[pg->imtrx]->nvkind[i],
           rd[pg->imtrx]->nvmatID[i], gvec[pg->imtrx], exo, FALSE, time_value);
       step = (*nprint) + 1;
-      wr_nodal_result_exo(exo, output_file, gvec[pg->imtrx], offset + 1, step, time_value);
-      offset++;
+      wr_nodal_result_exo(exo, output_file, gvec[pg->imtrx], offset + i + 1, step, time_value);
     }
   }
 
@@ -198,7 +200,11 @@ write_solution_segregated(char output_file[], /* name EXODUS II file */
   /*
    *  Add additional user-specified post processing variables
    */
+  offset = 0;
   for (pg->imtrx = 0; pg->imtrx < upd->Total_Num_Matrices; pg->imtrx++) {
+    if (pg->imtrx > 0) {
+      offset += rd[pg->imtrx -1]->TotalNVSolnOutput + rd[pg->imtrx -1]->TotalNVPostOutput;
+    }
     if (rd[pg->imtrx]->TotalNVPostOutput > 0) {
       step = (*nprint) + 1;
   #ifdef DEBUG
@@ -206,8 +212,8 @@ write_solution_segregated(char output_file[], /* name EXODUS II file */
   #endif
 
       post_process_nodal(x[pg->imtrx], NULL, x_old[pg->imtrx], xdot[pg->imtrx],
-          xdot_old[pg->imtrx], resid_vector[pg->imtrx], step, &time_value,
-          delta_t, theta, x_pp, exo, dpi, rd[pg->imtrx], output_file);
+			 xdot_old[pg->imtrx], resid_vector[pg->imtrx], step, &time_value,
+			 delta_t, theta, x_pp, exo, dpi, rd[pg->imtrx], output_file, offset);
   #ifdef DEBUG
       fprintf(stderr, "%s: done w/ post_process_nodal\n", yo);
   #endif

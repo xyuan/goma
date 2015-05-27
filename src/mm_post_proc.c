@@ -2248,7 +2248,8 @@ post_process_nodal(double x[],	 /* Solution vector for the current processor */
  		   Exo_DB *exo,
 		   Dpi *dpi,
 		   RESULTS_DESCRIPTION_STRUCT *rd,
-		   char filename[] )
+		   char filename[],
+		   int matrix_offset)
 
 /*******************************************************************************
   Function which directs calculation of stream function & other post processing
@@ -3445,7 +3446,7 @@ post_process_nodal(double x[],	 /* Solution vector for the current processor */
       if (filename != NULL)
         {
           wr_nodal_result_exo(exo, filename, post_proc_vect[i],
-			      rd->TotalNVSolnOutput + i + 1, ts, *time_ptr);
+			      matrix_offset + rd->TotalNVSolnOutput + i + 1, ts, *time_ptr);
         }
     }
 

@@ -108,7 +108,7 @@ void solve_problem_segregated(Exo_DB *exo, /* ptr to the finite element mesh dat
   static double ****gvec_elem = NULL;
   static struct Results_Description **rd;
 
-  double *gv; /* Global variable values for ExoII database */
+  double *gv = NULL; /* Global variable values for ExoII database */
   int *tnv; /* total number of nodal variables and kinds */
   int *tev; /* total number of elem variables and kinds  */
   int *tnv_post; /* total number of nodal variables and kinds
