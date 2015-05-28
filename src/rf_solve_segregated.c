@@ -81,7 +81,6 @@ void solve_problem_segregated(Exo_DB *exo, /* ptr to the finite element mesh dat
   double **x_update = NULL; /* update at last iteration          */
   double **resid_vector = NULL; /* residual                          */
   double **resid_vector_sens = NULL; /* residual sensitivity              */
-
   double **scale = NULL; /* scale vector for modified newton  */
 
   int *node_to_fill = NULL;
@@ -91,7 +90,7 @@ void solve_problem_segregated(Exo_DB *exo, /* ptr to the finite element mesh dat
   /*
    * Variables for time integration
    */
-
+  double *timeValueRead;
   double theta = 0.0;
   static double time1 = 0.0; /* Current time that the simulation is trying  to find the solution for */
   double delta_t;
@@ -125,6 +124,7 @@ void solve_problem_segregated(Exo_DB *exo, /* ptr to the finite element mesh dat
 
   static const char yo[] = "solve_problem_segregated"; /* So my name is in a string.        */
 
+  timeValueRead = calloc(upd->Total_Num_Matrices, sizeof(double));
   tnv = malloc(sizeof(int) * upd->Total_Num_Matrices);
   tev = malloc(sizeof(int) * upd->Total_Num_Matrices);
   tnv_post = malloc(sizeof(int) * upd->Total_Num_Matrices);
@@ -365,6 +365,12 @@ void solve_problem_segregated(Exo_DB *exo, /* ptr to the finite element mesh dat
     EH(-1, "Attempted to allocate unknown sparse matrix format");
   }
 
+  /* Read initial values from exodus file */
+  for (pg->imtrx = 0; pg->imtrx < upd->Total_Num_Matrices; pg->imtrx++) {
+    init_vec(x[pg->imtrx], cx, exo, dpi, NULL, 0, &timeValueRead[pg->imtrx]);
+  }
+
+
   /***************************************************************************
    *            STEADY STATE SOLUTION PROCEDURE
    ***************************************************************************/
@@ -376,7 +382,6 @@ void solve_problem_segregated(Exo_DB *exo, /* ptr to the finite element mesh dat
     /* Right now, we are solving segregated problems in numerical order fashion
      * Matrix 0, then 1, then so on. In the future we could change that.
      */
-
     for (pg->imtrx = 0; pg->imtrx < upd->Total_Num_Matrices; pg->imtrx++) {
 
       find_and_set_Dirichlet(x[pg->imtrx], xdot[pg->imtrx], exo, dpi);
