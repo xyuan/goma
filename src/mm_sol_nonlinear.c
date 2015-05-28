@@ -262,6 +262,8 @@ int solve_nonlinear_problem(struct Aztec_Linear_Solver_System *ams,
                             void *con_ptr)   /* Identifies if called from LOCA */
 {
 
+  static int prev_matrix = 0;
+
   double *a   = ams->val;	/* nonzero values of a CMSR matrix */
   int    *ija = ams->bindx;	/* column pointer array into matrix "a"*/
 
@@ -472,6 +474,11 @@ int solve_nonlinear_problem(struct Aztec_Linear_Solver_System *ams,
   dbl abs_row_sum, row_sum;
   VARIABLE_DESCRIPTION_STRUCT *vd_eqn, *vd_var;
 #endif /* DEBUG_MMH */
+
+  if (pg->imtrx != prev_matrix) {
+    first_linear_solver_call = TRUE;
+    prev_matrix = pg->imtrx;
+  }
 
   /*
    * Begin executable statements...
@@ -1303,7 +1310,7 @@ EH(-1,"version not compiled with frontal solver");
 	    Factor_Flag = 0;
 	  }
 	  matr_form = 1;
-
+	  
 	  UMF_system_id = SL_UMF(UMF_system_id,
 				 &first_linear_solver_call,
 				 &Factor_Flag, &matr_form,
@@ -1451,9 +1458,9 @@ EH(-1,"version not compiled with frontal solver");
       case AMESOS:
 
         if( strcmp( Matrix_Format,"msr" ) == 0 ) {
-          amesos_solve_msr( Amesos_Package, ams, delta_x, resid_vector, 1 );
+          amesos_solve_msr( Amesos_Package, ams, delta_x, resid_vector, 1 , pg->imtrx);
         } else if ( strcmp( Matrix_Format,"epetra" ) == 0 ) {
-          amesos_solve_epetra(Amesos_Package, ams, delta_x, resid_vector);
+          amesos_solve_epetra(Amesos_Package, ams, delta_x, resid_vector, pg->imtrx);
         } else {
           EH(-1," Sorry, only MSR and Epetra matrix formats are currently supported with the Amesos solver suite\n");
         }
@@ -1559,9 +1566,9 @@ EH(-1,"version not compiled with frontal solver");
 		  
 	  case AMESOS: 
             if( strcmp( Matrix_Format,"msr" ) == 0 ) {
-              amesos_solve_msr( Amesos_Package, ams, &wAC[iAC][0], &bAC[iAC][0], 0 );
+              amesos_solve_msr( Amesos_Package, ams, &wAC[iAC][0], &bAC[iAC][0], 0, pg->imtrx);
             } else if ( strcmp( Matrix_Format,"epetra" ) == 0 ) {
-              amesos_solve_epetra(Amesos_Package, ams, &wAC[iAC][0], &bAC[iAC][0]);
+              amesos_solve_epetra(Amesos_Package, ams, &wAC[iAC][0], &bAC[iAC][0], pg->imtrx);
             } else {
               EH(-1," Sorry, only MSR and Epetra matrix formats are currently supported with the Amesos solver suite\n");
             }
@@ -2313,7 +2320,7 @@ EH(-1,"version not compiled with frontal solver");
 	if (rd->TotalNVPostOutput > 0) {
 	  post_process_nodal(x, x_sens_p, x_old, xdot, xdot_old, 
 			     resid_vector, *nprint+1, &time_value,
-			     delta_t, theta, NULL, exo, dpi, rd, ExoFileOut);
+			     delta_t, theta, NULL, exo, dpi, rd, ExoFileOut, 0);
 	}
 	/* Write out time derivatives if requested */
 	if (TIME_DERIVATIVES != -1 && (TimeIntegration != STEADY)) {
@@ -3609,9 +3616,9 @@ soln_sens ( double lambda,  /*  parameter */
 		
     case AMESOS:	
       if( strcmp( Matrix_Format,"msr" ) == 0 ) {
-        amesos_solve_msr( Amesos_Package, ams, x_sens, resid_vector_sens, 0 );
+        amesos_solve_msr( Amesos_Package, ams, x_sens, resid_vector_sens, 0, pg->imtrx);
       } else if ( strcmp( Matrix_Format,"epetra" ) == 0 ) {
-        amesos_solve_epetra(Amesos_Package, ams, x_sens, resid_vector_sens);
+        amesos_solve_epetra(Amesos_Package, ams, x_sens, resid_vector_sens, pg->imtrx);
       } else {
         EH(-1," Sorry, only MSR and Epetra matrix formats are currently supported with the Amesos solver suite\n");
       }

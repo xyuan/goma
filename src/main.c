@@ -74,6 +74,8 @@ extern void handle_ieee(void );
 
 #include "brk_utils.h"
 
+#include "rf_solve_segregated.h"
+
 #define _MAIN_C
 #include "goma.h"
 
@@ -870,7 +872,9 @@ main(int argc, char **argv)
       }
     break;
   }
-  } /* End of if upd->Total_Num_Matrices === 1 */
+  } else {/* End of if upd->Total_Num_Matrices === 1 */
+        solve_problem_segregated(EXO_ptr, DPI_ptr, NULL);
+  }
 
   if (ProcID == 0 && Brk_Flag == 1 && Num_Proc > 1) {
     fix_output();
