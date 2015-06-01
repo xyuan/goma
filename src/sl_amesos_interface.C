@@ -89,6 +89,7 @@ amesos_solve_msr( char *choice,
       delete A_Base;
     }
     FirstRun = 1;
+    prev_matrix = imtrx;
   }
     
   /* Convert to Epetra format */
